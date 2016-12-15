@@ -1,0 +1,23 @@
+{
+  "name": "sketch-timer",
+  "version": "1.0.0",
+  "description": "A timer for sketching sessions",
+  "main": "app/js/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmrschmidt/sketch-timer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dmrschmidt/sketch-timer/issues"
+  },
+  "homepage": "https://github.com/dmrschmidt/sketch-timer#readme",
+  "dependencies": {
+    "vue": "^2.1.6"
+  }
+}
