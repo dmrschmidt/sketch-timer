@@ -1,6 +1,8 @@
 var audio = new Audio('resources/track_001.mp3')
 var countdown_time = 420
 
+audio.preload = "auto"
+
 function secondsTimeSpanToHMS(s) {
     var h = Math.floor(s / 3600)
     s -= h * 3600
