@@ -55,9 +55,23 @@ html {
     background: #D3F415;
 }
 
+.outer {
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+}
+
+.middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
 #timer {
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
-  vertical-align: middle;
+  margin-top: -20%;
   font-family: 'Khand', sans-serif;
   text-shadow: 3px 2px rgba(0, 0, 0, .35);
 }
