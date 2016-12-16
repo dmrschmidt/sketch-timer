@@ -56,11 +56,11 @@ html {
 }
 
 html.inactive {
-  background: #D0EA3B;
+  background: #29E0EC;
 }
 
 html.active {
-  background: #29E0EC;
+  background: #D0EA3B;
 }
 
 .outer {

@@ -4,7 +4,7 @@ function SketchTimer() {
 SketchTimer.prototype.init = function(element, container, timeFormatter) {
   this.audio = new Audio('resources/track_001.mp3')
   this.audio.preload = "auto"
-  this.sketching_duration = 10
+  this.sketching_duration = 420
   this.countdown_time = this.sketching_duration
   this.timer = null
 
