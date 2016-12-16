@@ -2,20 +2,13 @@ var audio = new Audio('resources/track_001.mp3')
 var sketching_duration = 420
 var countdown_time = sketching_duration
 var timer = null
+var timeFormatter = new TimeFormatter()
 
 audio.preload = "auto"
 
-function secondsTimeSpanToHMS(s) {
-    var h = Math.floor(s / 3600)
-    s -= h * 3600
-    var m = Math.floor(s / 60)
-    s -= m * 60
-    return m + ":" + (s < 10 ? '0' + s : s)
-}
-
 var updateTimer = function() {
   countdown_time -= 1;
-  $('#timer').html(secondsTimeSpanToHMS(countdown_time))
+  $('#timer').html(timeFormatter.format(countdown_time))
 
   if (countdown_time == 0) {
     audio.pause()
@@ -28,11 +21,11 @@ var reset = function() {
   audio.pause()
   audio.currentTime = 0
   countdown_time = sketching_duration
-  $('#timer').html(secondsTimeSpanToHMS(countdown_time))
+  $('#timer').html(timeFormatter.format(countdown_time))
 }
 
 $(document).ready(function() {
-  $('#timer').html(secondsTimeSpanToHMS(countdown_time))
+  $('#timer').html(timeFormatter.format(countdown_time))
 
   $('html').click(function() {
     if(countdown_time == 0) return
@@ -45,8 +38,4 @@ $(document).ready(function() {
       clearInterval(timer)
     }
   })
-
-  // $('html').click(function() {
-  //   reset()
-  // })
 })
