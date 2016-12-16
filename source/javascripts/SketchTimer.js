@@ -5,28 +5,32 @@ SketchTimer.prototype.init = function(element, container, timeFormatter) {
   this.audio = new Audio('resources/track_001.mp3')
   this.audio.preload = "auto"
   this.sketching_duration = 420
-  this.countdown_time = this.sketching_duration
   this.timer = null
 
   this.element = element
   this.container = container
   this.timeFormatter = timeFormatter
 
-  this.element.html(this.timeFormatter.format(this.countdown_time))
+  this.reset()
+  this.registerEvents()
+}
+
+SketchTimer.prototype.registerEvents = function() {
+  this.container.click(function() {
+    this.toggle()
+  }.bind(this))
 }
 
 SketchTimer.prototype.toggle = function() {
   if(this.countdown_time == 0) return
 
-  if(this.audio.paused) {
-    this.play()
-  } else {
-    this.pause()
-  }
+  this.audio.paused
+    ? this.play()
+    : this.pause()
 }
 
 SketchTimer.prototype.reset = function() {
-  clearInterval(timer)
+  clearInterval(this.timer)
   this.audio.pause()
   this.audio.currentTime = 0
   this.countdown_time = this.sketching_duration
