@@ -55,6 +55,14 @@ html {
     background: #D0EA3B;
 }
 
+html.inactive {
+  background: #D0EA3B;
+}
+
+html.active {
+  background: #29E0EC;
+}
+
 .outer {
     display: table;
     position: absolute;
