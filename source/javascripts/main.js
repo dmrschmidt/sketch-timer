@@ -13,8 +13,6 @@ function secondsTimeSpanToHMS(s) {
     return m + ":" + (s < 10 ? '0' + s : s)
 }
 
-$('#timer').html(secondsTimeSpanToHMS(countdown_time))
-
 var updateTimer = function() {
   countdown_time -= 1;
   $('#timer').html(secondsTimeSpanToHMS(countdown_time))
@@ -33,18 +31,22 @@ var reset = function() {
   $('#timer').html(secondsTimeSpanToHMS(countdown_time))
 }
 
-$('html').click(function() {
-  if(countdown_time == 0) return
+$(document).ready(function() {
+  $('#timer').html(secondsTimeSpanToHMS(countdown_time))
 
-  if(audio.paused) {
-    audio.play()
-    timer = setInterval(updateTimer, 1000)
-  } else {
-    audio.pause()
-    clearInterval(timer)
-  }
-})
+  $('html').click(function() {
+    if(countdown_time == 0) return
 
-$('html').dblclick(function() {
-  reset()
+    if(audio.paused) {
+      audio.play()
+      timer = setInterval(updateTimer, 1000)
+    } else {
+      audio.pause()
+      clearInterval(timer)
+    }
+  })
+
+  // $('html').click(function() {
+  //   reset()
+  // })
 })
