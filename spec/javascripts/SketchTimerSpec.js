@@ -16,23 +16,55 @@ describe("SketchTimer", function() {
     sketchTimer.pause()
   })
 
-  describe("toggle", function() {
-    describe("when currently stopped", function() {
-      it("changes container to active", function() {
-        sketchTimer.toggle()
-        expect(container.hasClass('active')).toBeTruthy()
+  function tap(element, done, timeout) {
+    element.trigger("mousedown")
+
+    setTimeout(function() {
+      element.trigger("mouseup")
+      done()
+    }, timeout)
+  }
+
+  describe("tapping the container quickly", function() {
+    describe("toggles the timer / player", function() {
+      describe("when currently stopped", function() {
+        beforeEach(function(done) {
+          tap(container, done, 100)
+        })
+
+        it("changes container to active", function() {
+          expect(container.hasClass('active')).toBeTruthy()
+        })
+      })
+
+      describe("when currently playing", function() {
+        beforeEach(function() {
+          container.trigger("mousedown")
+          container.trigger("mouseup")
+        })
+
+        it("changes container to inactive", function() {
+          container.trigger("mousedown")
+          container.trigger("mouseup")
+
+          expect(container.hasClass('active')).toBeFalsy()
+        })
       })
     })
+  })
 
-    describe("when currently playing", function() {
-      beforeEach(function() {
-        sketchTimer.toggle()
-      })
+  describe("tapping the container slowly", function() {
+    beforeEach(function(done) {
+      container.trigger("mousedown")
 
-      it("changes container to inactive", function() {
-        sketchTimer.toggle()
-        expect(container.hasClass('active')).toBeFalsy()
-      })
+      setTimeout(function() {
+        container.trigger("mouseup")
+        done()
+      }, 400)
+    })
+
+    it("does not toggle the timer / player", function() {
+      expect(container.hasClass('active')).toBeFalsy()
     })
   })
 })

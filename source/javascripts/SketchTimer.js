@@ -4,8 +4,10 @@ function SketchTimer() {
 SketchTimer.prototype.init = function(element, container, timeFormatter) {
   this.audio = new Audio('resources/track_001.mp3')
   this.audio.preload = "auto"
-  this.sketching_duration = 420
+  this.sketchingDuration = 420
   this.timer = null
+  this.lastTapTime = 0
+  this.longTapThresholdMs = 300
 
   this.element = element
   this.container = container
@@ -16,25 +18,36 @@ SketchTimer.prototype.init = function(element, container, timeFormatter) {
 }
 
 SketchTimer.prototype.registerEvents = function() {
-  this.container.click(function() {
-    this.toggle()
+  this.container.mousedown(function() {
+    this.lastTapTime = Date.now()
+  }.bind(this))
+
+  this.container.mouseup(function() {
+    var tapDuration = Date.now() - this.lastTapTime
+    tapDuration < this.longTapThresholdMs
+      ? this.shortTap()
+      : this.longTap()
   }.bind(this))
 }
 
-SketchTimer.prototype.toggle = function() {
-  if(this.countdown_time == 0) return
+SketchTimer.prototype.shortTap = function() {
+  if(this.countdownTime == 0) return
 
   this.audio.paused
     ? this.play()
     : this.pause()
 }
 
+SketchTimer.prototype.longTap = function() {
+  console.log('long press')
+}
+
 SketchTimer.prototype.reset = function() {
   clearInterval(this.timer)
   this.audio.pause()
   this.audio.currentTime = 0
-  this.countdown_time = this.sketching_duration
-  this.element.html(this.timeFormatter.format(this.countdown_time))
+  this.countdownTime = this.sketchingDuration
+  this.element.html(this.timeFormatter.format(this.countdownTime))
 }
 
 SketchTimer.prototype.play = function() {
@@ -50,10 +63,10 @@ SketchTimer.prototype.pause = function() {
 }
 
 SketchTimer.prototype.update = function() {
-  this.countdown_time -= 1;
-  this.element.html(this.timeFormatter.format(this.countdown_time))
+  this.countdownTime -= 1;
+  this.element.html(this.timeFormatter.format(this.countdownTime))
 
-  if (this.countdown_time == 0) {
+  if (this.countdownTime == 0) {
     this.pause()
   }
 }
