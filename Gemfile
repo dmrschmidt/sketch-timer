@@ -7,4 +7,5 @@ gem 'middleman', '>= 4.0.0'
 
 group :development, :test do
   gem 'jasmine'
+  gem 'middleman-dotenv', '~> 2.0'
 end

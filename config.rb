@@ -1,3 +1,4 @@
+require 'middleman-dotenv'
 ###
 # Page options, layouts, aliases and proxies
 ###
@@ -21,6 +22,9 @@ page '/*.txt', layout: false
 # Reload the browser automatically whenever files change
 configure :development do
   activate :livereload
+
+  # Uses .env in the root of the project
+  activate :dotenv
 end
 
 ###
