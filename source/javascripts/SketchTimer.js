@@ -1,18 +1,18 @@
-function SketchTimer() {
-}
+function SketchTimer(element, container, timeFormatter, soundCloudAPI) {
+  this.element = element
+  this.container = container
+  this.timeFormatter = timeFormatter
+  this.soundCloudAPI = soundCloudAPI
 
-SketchTimer.prototype.init = function(element, container, timeFormatter) {
-  this.audio = new Audio('resources/track_001.mp3')
-  this.audio.preload = "auto"
+  this.player = null
   this.sketchingDuration = 420
   this.timer = null
   this.lastTapTime = 0
   this.longTapThresholdMs = 300
+}
+SketchTimer.prototype.constructor = SketchTimer
 
-  this.element = element
-  this.container = container
-  this.timeFormatter = timeFormatter
-
+SketchTimer.prototype.init = function() {
   this.reset()
   this.registerEvents()
 }
@@ -33,9 +33,9 @@ SketchTimer.prototype.registerEvents = function() {
 SketchTimer.prototype.shortTap = function() {
   if(this.countdownTime == 0) return
 
-  this.audio.paused
-    ? this.play()
-    : this.pause()
+  this.isPlaying()
+    ? this.pause()
+    : this.play()
 }
 
 SketchTimer.prototype.longTap = function() {
@@ -44,20 +44,34 @@ SketchTimer.prototype.longTap = function() {
 
 SketchTimer.prototype.reset = function() {
   clearInterval(this.timer)
-  this.audio.pause()
-  this.audio.currentTime = 0
+  this.pause()
   this.countdownTime = this.sketchingDuration
   this.element.html(this.timeFormatter.format(this.countdownTime))
 }
 
+SketchTimer.prototype.isPlaying = function() {
+  return (this.player != null) && this.player.isPlaying()
+}
+
 SketchTimer.prototype.play = function() {
-  this.audio.play()
+  if (this.player == null) {
+    this.soundCloudAPI.stream('/tracks/302836223').then(function(player) {
+      console.log('starting playback now')
+      this.player = player
+      this.player.play()
+    }.bind(this)).catch(function(error) {
+      console.log('SoundCloud error ' + error())
+    })
+  } else {
+    this.player.play()
+  }
+
   this.container.addClass('active')
   this.timer = setInterval(this.update.bind(this), 1000)
 }
 
 SketchTimer.prototype.pause = function() {
-  this.audio.pause()
+  if (this.player != null) { this.player.pause() }
   this.container.removeClass('active')
   clearInterval(this.timer)
 }

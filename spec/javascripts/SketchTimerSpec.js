@@ -1,19 +1,37 @@
+function ArgumentCaptor() {}
+ArgumentCaptor.prototype.then = function(closure) {
+  this.closure = closure
+  return new ArgumentCaptor()
+}
+ArgumentCaptor.prototype.catch = function(closure) {
+  this.closure = closure
+  return new ArgumentCaptor()
+}
+
+function FakeSoundCloudAPI() {}
+FakeSoundCloudAPI.prototype.stream = function() {
+  return new ArgumentCaptor()
+}
+
+function FakePlayer() { this.playing = false }
+FakePlayer.prototype.play = function() { this.playing = true }
+FakePlayer.prototype.pause = function() { this.playing = false }
+FakePlayer.prototype.isPlaying = function() { return this.playing }
+
 describe("SketchTimer", function() {
   var sketchTimer
   var element
   var container
   var timeFormatter
+  var soundCloudAPI
 
   beforeEach(function() {
+    soundCloudAPI = new FakeSoundCloudAPI()
     element = $('<div>')
     container = $('<div>')
     timeFormatter = new TimeFormatter()
-    sketchTimer = new SketchTimer()
-    sketchTimer.init(element, container, timeFormatter)
-  })
-
-  afterEach(function() {
-    sketchTimer.pause()
+    sketchTimer = new SketchTimer(element, container, timeFormatter, soundCloudAPI)
+    sketchTimer.init()
   })
 
   function tap(element, done, timeout) {
@@ -27,27 +45,70 @@ describe("SketchTimer", function() {
 
   describe("tapping the container quickly", function() {
     describe("toggles the timer / player", function() {
-      describe("when currently stopped", function() {
+      describe("when called the first time", function() {
+        var streamCall
+
         beforeEach(function(done) {
+          streamCall = new ArgumentCaptor()
+          spyOn(soundCloudAPI, "stream").and.callFake(function(url) {
+            return streamCall
+          })
           tap(container, done, 100)
+        })
+
+        it("starts streaming a track", function() {
+          expect(soundCloudAPI.stream).toHaveBeenCalled();
         })
 
         it("changes container to active", function() {
           expect(container.hasClass('active')).toBeTruthy()
         })
+
+        it("once streaming is done, starts playing track", function() {
+          var player = new FakePlayer()
+          streamCall.closure(player)
+          expect(player.playing).toBeTruthy()
+        })
       })
 
-      describe("when currently playing", function() {
-        beforeEach(function() {
-          container.trigger("mousedown")
-          container.trigger("mouseup")
+      describe("when not called first time", function() {
+        var streamCall
+
+        beforeEach(function(done) {
+          tap(container, function() {
+            var player = new FakePlayer()
+            streamCall.closure(player)
+            done()
+          }, 100)
+          streamCall = new ArgumentCaptor()
+          spyOn(soundCloudAPI, "stream").and.callFake(function(url) {
+            return streamCall
+          })
         })
 
-        it("changes container to inactive", function() {
-          container.trigger("mousedown")
-          container.trigger("mouseup")
+        it("does not start streaming again", function(done) {
+          tap(container, function() {}, 100)
+          tap(container, done, 100)
 
-          expect(container.hasClass('active')).toBeFalsy()
+          expect(soundCloudAPI.stream.calls.count()).toEqual(1)
+        })
+
+        describe("when currently stopped", function() {
+          it("changes container to active", function() {
+            expect(container.hasClass('active')).toBeTruthy()
+          })
+        })
+
+        describe("when currently playing", function() {
+          beforeEach(function(done) {
+            tap(container, done, 100)
+          })
+
+          it("changes container to inactive", function(done) {
+            tap(container, done, 100)
+
+            expect(container.hasClass('active')).toBeFalsy()
+          })
         })
       })
     })

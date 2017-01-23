@@ -40,3 +40,6 @@ jspm_packages
 build
 .sass-cache
 .env
+
+# CloudFoundry
+manifest.yml

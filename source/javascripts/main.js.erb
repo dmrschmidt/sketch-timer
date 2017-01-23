@@ -1,0 +1,20 @@
+var timeFormatter = new TimeFormatter()
+var sketchTimer
+
+var environmentVariablesMissing = <%= ENV['SOUNDCLOUD_CLIENT_ID'].nil? %>
+
+if (environmentVariablesMissing) {
+  alert("" +
+    "Ensure that environment variable SOUNDCLOUD_CLIENT_ID is set " +
+    "to your app's SoundCloud API client_id."
+  );
+} else {
+  SC.initialize({
+    client_id: '<%= ENV['SOUNDCLOUD_CLIENT_ID'] %>'
+  });
+}
+
+$(document).ready(function() {
+  sketchTimer = new SketchTimer($('#timer'), $('html'), timeFormatter, SC)
+  sketchTimer.init()
+})
