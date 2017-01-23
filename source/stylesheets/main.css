@@ -6,6 +6,11 @@ html {
     font-family: 'Space Mono', monospace;
     line-height: 1.4;
     cursor: pointer;
+
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 ::-moz-selection {
