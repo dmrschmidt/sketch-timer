@@ -4,6 +4,7 @@ function SketchTimer() {
 SketchTimer.prototype.init = function(element, container, timeFormatter) {
   this.audio = new Audio('resources/track_001.mp3')
   this.audio.preload = "auto"
+SketchTimer.prototype.init = function(element, container, menu, timeFormatter) {
   this.sketchingDuration = 420
   this.timer = null
   this.lastTapTime = 0
@@ -11,6 +12,7 @@ SketchTimer.prototype.init = function(element, container, timeFormatter) {
 
   this.element = element
   this.container = container
+  this.menu = menu
   this.timeFormatter = timeFormatter
 
   this.reset()
@@ -39,13 +41,14 @@ SketchTimer.prototype.shortTap = function() {
 }
 
 SketchTimer.prototype.longTap = function() {
-  console.log('long press')
+  this.menu.slideDown()
 }
 
 SketchTimer.prototype.reset = function() {
   clearInterval(this.timer)
   this.audio.pause()
   this.audio.currentTime = 0
+  this.menu.hide()
   this.countdownTime = this.sketchingDuration
   this.element.html(this.timeFormatter.format(this.countdownTime))
 }

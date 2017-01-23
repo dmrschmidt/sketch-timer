@@ -2,14 +2,16 @@ describe("SketchTimer", function() {
   var sketchTimer
   var element
   var container
+  var menu
   var timeFormatter
 
   beforeEach(function() {
     element = $('<div>')
     container = $('<div>')
+    menu = $('<div>')
     timeFormatter = new TimeFormatter()
     sketchTimer = new SketchTimer()
-    sketchTimer.init(element, container, timeFormatter)
+    sketchTimer.init(element, container, menu, timeFormatter)
   })
 
   afterEach(function() {
@@ -24,6 +26,12 @@ describe("SketchTimer", function() {
       done()
     }, timeout)
   }
+
+  describe("initial status", function() {
+    it("hides the menu", function() {
+      expect(menu.css('display')).toEqual('none')
+    })
+  })
 
   describe("tapping the container quickly", function() {
     describe("toggles the timer / player", function() {
@@ -65,6 +73,10 @@ describe("SketchTimer", function() {
 
     it("does not toggle the timer / player", function() {
       expect(container.hasClass('active')).toBeFalsy()
+    })
+
+    it("opens a menu", function() {
+      expect(menu.css('display')).not.toEqual('none')
     })
   })
 })

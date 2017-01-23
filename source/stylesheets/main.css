@@ -75,6 +75,19 @@ html.active {
     vertical-align: middle;
 }
 
+#menu {
+  text-align: center;
+  margin-top: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Khand', sans-serif;
+  text-shadow: 3px 2px rgba(0, 0, 0, .35);
+  background-color: #FFFFFF;
+}
+
 #timer {
   margin-left: auto;
   margin-right: auto;
