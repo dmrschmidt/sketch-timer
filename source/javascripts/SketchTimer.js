@@ -53,11 +53,24 @@ SketchTimer.prototype.isPlaying = function() {
   return (this.player != null) && this.player.isPlaying()
 }
 
+SketchTimer.prototype.configurePlayer = function(player) {
+  this.player = player
+  this.configurePlayerForEternalRepeat()
+}
+
+SketchTimer.prototype.configurePlayerForEternalRepeat = function() {
+  this.player.on('finish', function() {
+    console.log('finished playback, repeating track')
+    this.player.seek(0)
+    this.player.play()
+  }.bind(this))
+}
+
 SketchTimer.prototype.play = function() {
   if (this.player == null) {
     this.soundCloudAPI.stream('/tracks/302836223').then(function(player) {
       console.log('starting playback now')
-      this.player = player
+      this.configurePlayer(player)
       this.player.play()
     }.bind(this)).catch(function(error) {
       console.log('SoundCloud error ' + error())

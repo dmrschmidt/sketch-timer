@@ -16,7 +16,9 @@ FakeSoundCloudAPI.prototype.stream = function() {
 function FakePlayer() { this.playing = false }
 FakePlayer.prototype.play = function() { this.playing = true }
 FakePlayer.prototype.pause = function() { this.playing = false }
+FakePlayer.prototype.seek = function(timestamp) { this.lastSeek = timestamp }
 FakePlayer.prototype.isPlaying = function() { return this.playing }
+FakePlayer.prototype.on = function(event, handler) { this.lastEvent = event; this.lastHandler = handler; }
 
 describe("SketchTimer", function() {
   var sketchTimer
@@ -57,17 +59,35 @@ describe("SketchTimer", function() {
         })
 
         it("starts streaming a track", function() {
-          expect(soundCloudAPI.stream).toHaveBeenCalled();
+          expect(soundCloudAPI.stream).toHaveBeenCalled()
         })
 
         it("changes container to active", function() {
           expect(container.hasClass('active')).toBeTruthy()
         })
 
-        it("once streaming is done, starts playing track", function() {
-          var player = new FakePlayer()
-          streamCall.closure(player)
-          expect(player.playing).toBeTruthy()
+        describe("player, once streaming is buffered", function() {
+          var player
+
+          beforeEach(function() {
+            player = new FakePlayer()
+            streamCall.closure(player)
+          })
+
+          it("configures player for eternal repeat", function() {
+            spyOn(player, "seek")
+            spyOn(player, "play")
+
+            player.lastHandler()
+
+            expect(player.lastEvent).toEqual('finish')
+            expect(player.seek).toHaveBeenCalledWith(0)
+            expect(player.play).toHaveBeenCalled()
+          })
+
+          it("starts playing track", function() {
+            expect(player.playing).toBeTruthy()
+          })
         })
       })
 
