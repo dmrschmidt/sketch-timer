@@ -1,10 +1,9 @@
-function SketchTimer(element, container, timeFormatter, soundCloudAPI) {
+function SketchTimer(element, container, timeFormatter, queuePlayer) {
   this.element = element
   this.container = container
   this.timeFormatter = timeFormatter
-  this.soundCloudAPI = soundCloudAPI
+  this.queuePlayer = queuePlayer
 
-  this.player = null
   this.sketchingDuration = 420
   this.timer = null
   this.lastTapTime = 0
@@ -15,6 +14,7 @@ SketchTimer.prototype.constructor = SketchTimer
 SketchTimer.prototype.init = function() {
   this.reset()
   this.registerEvents()
+  this.queuePlayer.prepare()
 }
 
 SketchTimer.prototype.registerEvents = function() {
@@ -33,7 +33,7 @@ SketchTimer.prototype.registerEvents = function() {
 SketchTimer.prototype.shortTap = function() {
   if(this.countdownTime == 0) return
 
-  this.isPlaying()
+  this.isActive()
     ? this.pause()
     : this.play()
 }
@@ -49,42 +49,18 @@ SketchTimer.prototype.reset = function() {
   this.element.html(this.timeFormatter.format(this.countdownTime))
 }
 
-SketchTimer.prototype.isPlaying = function() {
-  return (this.player != null) && this.player.isPlaying()
-}
-
-SketchTimer.prototype.configurePlayer = function(player) {
-  this.player = player
-  this.configurePlayerForEternalRepeat()
-}
-
-SketchTimer.prototype.configurePlayerForEternalRepeat = function() {
-  this.player.on('finish', function() {
-    console.log('finished playback, repeating track')
-    this.player.seek(0)
-    this.player.play()
-  }.bind(this))
+SketchTimer.prototype.isActive = function() {
+  return this.queuePlayer.isPlaying()
 }
 
 SketchTimer.prototype.play = function() {
-  if (this.player == null) {
-    this.soundCloudAPI.stream('/tracks/302836223').then(function(player) {
-      console.log('starting playback now')
-      this.configurePlayer(player)
-      this.player.play()
-    }.bind(this)).catch(function(error) {
-      console.log('SoundCloud error ' + error())
-    })
-  } else {
-    this.player.play()
-  }
-
+  this.queuePlayer.play()
   this.container.addClass('active')
   this.timer = setInterval(this.update.bind(this), 1000)
 }
 
 SketchTimer.prototype.pause = function() {
-  if (this.player != null) { this.player.pause() }
+  this.queuePlayer.pause()
   this.container.removeClass('active')
   clearInterval(this.timer)
 }
