@@ -2,7 +2,7 @@ var timeFormatter = new TimeFormatter()
 var sketchTimer
 
 var environmentVariablesMissing = <%= ENV['SOUNDCLOUD_CLIENT_ID'].nil? %>
-var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification);
+var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification) || navigator.userAgent.match(/iPhone/i)
 
 if (!isSafari) {
   alert("Sorry, for now this only works in Safari and on Apple devices :-/")
