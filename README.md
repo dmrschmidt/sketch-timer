@@ -1,7 +1,13 @@
-# sketch-timer
-A timer for sketching sessions
+# zeebn - a sketch-timer
+Zeebn - a timer for sketching sessions.
 
-https://invis.io/5S9QWWBQ8#/211353393_Mobile_Portrait
+# Usage
+
+Go to https://zeebn.cfapps.io and add it to your home screen to run as a dedicated app on your mobile.
+
+* **play** tap the screen
+* **pause** tap the screen
+* **reset** long-tap the screen
 
 # Development / SetUp
 
