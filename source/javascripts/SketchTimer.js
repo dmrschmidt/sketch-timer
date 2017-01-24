@@ -19,21 +19,23 @@ SketchTimer.prototype.init = function() {
 }
 
 SketchTimer.prototype.registerEvents = function() {
-  this.container.mousedown(function() {
+  this.container.on('mousedown touchstart', function(event) {
+    event.preventDefault()
     this.lastTapTime = Date.now()
     this.longTapTimer = setTimeout(this.longTap.bind(this),
                                    this.longTapThresholdMs)
   }.bind(this))
 
-  this.container.mouseup(function() {
+  this.container.on('mouseup touchend', function(event) {
+    event.preventDefault()
     clearTimeout(this.longTapTimer)
     var tapDuration = Date.now() - this.lastTapTime
-    if(tapDuration < this.longTapThresholdMs) { this.shortTap() }
+    if (tapDuration < this.longTapThresholdMs) { this.shortTap() }
   }.bind(this))
 }
 
 SketchTimer.prototype.shortTap = function() {
-  if(this.countdownTime == 0) return
+  if (this.countdownTime == 0) return
 
   this.isActive()
     ? this.pause()
