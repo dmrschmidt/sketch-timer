@@ -58,6 +58,7 @@ textarea {
 html {
     font: 120pt Helvetica, Helvetica Neue, Arial;
     background: #29E0EC;
+    transition: background 0.3s ease;
 }
 
 html.inactive {
