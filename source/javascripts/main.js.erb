@@ -1,4 +1,5 @@
 var timeFormatter = new TimeFormatter()
+var queuePlayer
 var sketchTimer
 
 var environmentVariablesMissing = <%= ENV['SOUNDCLOUD_CLIENT_ID'].nil? %>
@@ -20,6 +21,7 @@ if (environmentVariablesMissing) {
 }
 
 $(document).ready(function() {
-  sketchTimer = new SketchTimer($('#timer'), $('html'), timeFormatter, SC)
+  queuePlayer = new QueuePlayer(SC)
+  sketchTimer = new SketchTimer($('#timer'), $('html'), timeFormatter, queuePlayer)
   sketchTimer.init()
 })
