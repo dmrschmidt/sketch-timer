@@ -1,5 +1,4 @@
-# Zeebn - a sketch-timer
-Zeebn - a timer for sketching sessions.
+# Zeebn - a sketching session timer
 
 # Usage
 
