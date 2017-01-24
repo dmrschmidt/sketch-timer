@@ -7,7 +7,8 @@ function SketchTimer(element, container, timeFormatter, queuePlayer) {
   this.sketchingDuration = 420
   this.timer = null
   this.lastTapTime = 0
-  this.longTapThresholdMs = 300
+  this.longTapThresholdMs = 400
+  this.longTapTimer = null
 }
 SketchTimer.prototype.constructor = SketchTimer
 
@@ -20,13 +21,14 @@ SketchTimer.prototype.init = function() {
 SketchTimer.prototype.registerEvents = function() {
   this.container.mousedown(function() {
     this.lastTapTime = Date.now()
+    this.longTapTimer = setTimeout(this.longTap.bind(this),
+                                   this.longTapThresholdMs)
   }.bind(this))
 
   this.container.mouseup(function() {
+    clearTimeout(this.longTapTimer)
     var tapDuration = Date.now() - this.lastTapTime
-    tapDuration < this.longTapThresholdMs
-      ? this.shortTap()
-      : this.longTap()
+    if(tapDuration < this.longTapThresholdMs) { this.shortTap() }
   }.bind(this))
 }
 
