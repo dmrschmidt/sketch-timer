@@ -6,7 +6,7 @@ var environmentVariablesMissing = <%= ENV['SOUNDCLOUD_CLIENT_ID'].nil? %>
 var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification) || navigator.userAgent.match(/iPhone/i)
 
 if (!isSafari) {
-  alert("Sorry, for now this only works in Safari and on Apple devices :-/")
+  alert("Sorry, for now sound playback only works in Safari and on Apple mobile devices :-/")
 }
 
 if (environmentVariablesMissing) {
