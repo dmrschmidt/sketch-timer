@@ -1,4 +1,4 @@
-var defaultPlaylistUrl = 'playlists/71646596'
+var defaultPlaylistUrl = 'playlists/47514837' // https://soundcloud.com/koholaa/sets/soundcloud-kitchen-playlist
 
 function QueuePlayer(soundCloudAPI) {
   this.soundCloudAPI = soundCloudAPI
