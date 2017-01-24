@@ -40,11 +40,12 @@ SketchTimer.prototype.shortTap = function() {
 
 SketchTimer.prototype.longTap = function() {
   console.log('long press')
+  this.reset()
 }
 
 SketchTimer.prototype.reset = function() {
-  clearInterval(this.timer)
-  this.pause()
+  console.log('requested reset')
+  this.stop()
   this.countdownTime = this.sketchingDuration
   this.element.html(this.timeFormatter.format(this.countdownTime))
 }
@@ -54,12 +55,21 @@ SketchTimer.prototype.isActive = function() {
 }
 
 SketchTimer.prototype.play = function() {
+  console.log('requested play')
   this.queuePlayer.play()
   this.container.addClass('active')
   this.timer = setInterval(this.update.bind(this), 1000)
 }
 
+SketchTimer.prototype.stop = function() {
+  console.log('requested stop')
+  this.queuePlayer.stop()
+  this.container.removeClass('active')
+  clearInterval(this.timer)
+}
+
 SketchTimer.prototype.pause = function() {
+  console.log('requested pause')
   this.queuePlayer.pause()
   this.container.removeClass('active')
   clearInterval(this.timer)

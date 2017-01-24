@@ -44,6 +44,12 @@ QueuePlayer.prototype.pause = function() {
   if (this.player != null) { this.player.pause() }
 }
 
+QueuePlayer.prototype.stop = function() {
+  this.pause()
+
+  if (this.player != null) { this.player.seek(0) }
+}
+
 QueuePlayer.prototype.isPlaying = function() {
   return (this.player != null) && this.player.isPlaying()
 }

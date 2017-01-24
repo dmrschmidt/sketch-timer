@@ -3,6 +3,7 @@ function FakeQueuePlayer() { this.playing = false }
 FakeQueuePlayer.prototype.prepare = function() {}
 FakeQueuePlayer.prototype.play = function() { this.playing = true }
 FakeQueuePlayer.prototype.pause = function() { this.playing = false }
+FakeQueuePlayer.prototype.stop = function() { this.playing = false }
 FakeQueuePlayer.prototype.isPlaying = function() { return this.playing }
 
 describe("SketchTimer", function() {
@@ -27,11 +28,18 @@ describe("SketchTimer", function() {
 
   function tap(element, done, timeout) {
     element.trigger("mousedown")
-
     setTimeout(function() {
       element.trigger("mouseup")
       done()
     }, timeout)
+  }
+
+  function slowTap(element, done) {
+    element.trigger("mousedown")
+    setTimeout(function() {
+      element.trigger("mouseup")
+      done()
+    }, 500)
   }
 
   describe("tapping the container quickly", function() {
@@ -69,16 +77,39 @@ describe("SketchTimer", function() {
 
   describe("tapping the container slowly", function() {
     beforeEach(function(done) {
-      container.trigger("mousedown")
-
-      setTimeout(function() {
-        container.trigger("mouseup")
-        done()
-      }, 400)
+      slowTap(container, done)
     })
 
     it("does not toggle the timer / player", function() {
       expect(container.hasClass('active')).toBeFalsy()
+    })
+
+    describe("when already playing", function() {
+      beforeEach(function(done) {
+        tap(container, function() {}, 100)
+        setTimeout(done, 1400)
+      })
+
+      describe("reset", function() {
+        beforeEach(function(done) {
+          spyOn(queuePlayer, "stop").and.callThrough()
+          expect(element.html()).toEqual("6:59")
+          slowTap(container, function() {})
+          setTimeout(done, 1400)
+        })
+
+        it("resets the time (stops countdown too, annoying to test)", function() {
+          expect(element.html()).toEqual("7:00")
+        })
+
+        it("stops the queue player", function() {
+          expect(queuePlayer.stop).toHaveBeenCalled()
+        })
+
+        it("marks timer as inactive", function() {
+          expect(container.hasClass('active')).toBeFalsy()
+        })
+      })
     })
   })
 })

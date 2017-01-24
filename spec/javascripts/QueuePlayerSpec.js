@@ -97,4 +97,36 @@ describe("QueuePlayer", function() {
       })
     })
   })
+
+  describe("pause", function() {
+    beforeEach(function() {
+      queuePlayer.player = new FakePlayer()
+      queuePlayer.player.playing = true
+    })
+
+    it("pauses the SoundCloud player", function() {
+      queuePlayer.pause()
+      expect(queuePlayer.player.isPlaying()).toBeFalsy()
+    })
+  })
+
+  describe("stop", function() {
+    var player
+
+    beforeEach(function() {
+      player = new FakePlayer()
+      queuePlayer.player = player
+      queuePlayer.player.playing = true
+    })
+
+    it("stops the SoundCloud player", function() {
+      queuePlayer.stop()
+      expect(queuePlayer.player.isPlaying()).toBeFalsy()
+    })
+
+    it("rewinds the track", function() {
+      queuePlayer.stop()
+      expect(player.lastSeek).toEqual(0)
+    })
+  })
 })
