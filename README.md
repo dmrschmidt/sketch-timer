@@ -5,9 +5,9 @@ Zeebn - a timer for sketching sessions.
 
 Go to https://zeebn.cfapps.io and add it to your home screen to run as a dedicated app on your mobile.
 
-* **play** tap the screen
-* **pause** tap the screen
-* **reset** long-tap the screen
+* **play** - tap the screen
+* **pause** - tap the screen
+* **reset** - long-tap the screen
 
 # Development / SetUp
 
