@@ -61,6 +61,10 @@ html {
     transition: background 0.3s ease;
 }
 
+html.resetting {
+  background: #FF9900 !important;
+}
+
 html.switching {
   background: #CC00FF !important;
 }

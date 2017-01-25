@@ -55,14 +55,12 @@ SketchTimer.prototype.shortTap = function() {
 }
 
 SketchTimer.prototype.didSwitchTrack = function() {
-  this.container.addClass('switching')
-  setTimeout(function() {
-    this.container.removeClass('switching')
-  }.bind(this), 400)
+  this.flashScreen('switching')
 }
 
 SketchTimer.prototype.longTap = function() {
   console.log('long press')
+  this.flashScreen('resetting')
   this.reset()
 }
 
@@ -110,4 +108,11 @@ SketchTimer.prototype.update = function() {
   if (this.countdownTime == 0) {
     this.pause()
   }
+}
+
+SketchTimer.prototype.flashScreen = function(style) {
+  this.container.addClass(style)
+  setTimeout(function() {
+    this.container.removeClass(style)
+  }.bind(this), 400)
 }
