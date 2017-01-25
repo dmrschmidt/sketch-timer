@@ -36,7 +36,7 @@ describe("QueuePlayer", function() {
   describe("prepare", function() {
     it("loads the given playlist", function() {
       queuePlayer.prepare()
-      expect(soundCloudAPI.lastUrl).toEqual('playlists/71646596')
+      expect(soundCloudAPI.lastUrl).toEqual('playlists/47514837')
     })
 
     describe("when playlist is loaded", function() {

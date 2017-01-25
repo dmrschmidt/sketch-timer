@@ -4,6 +4,7 @@ FakeQueuePlayer.prototype.prepare = function() {}
 FakeQueuePlayer.prototype.play = function() { this.playing = true }
 FakeQueuePlayer.prototype.pause = function() { this.playing = false }
 FakeQueuePlayer.prototype.stop = function() { this.playing = false }
+FakeQueuePlayer.prototype.next = function() {}
 FakeQueuePlayer.prototype.isPlaying = function() { return this.playing }
 
 describe("SketchTimer", function() {
@@ -110,6 +111,14 @@ describe("SketchTimer", function() {
           expect(container.hasClass('active')).toBeFalsy()
         })
       })
+    })
+  })
+
+  describe("shaking", function() {
+    it("tells the player to change the track", function() {
+      spyOn(queuePlayer, "next")
+      sketchTimer.shake()
+      expect(queuePlayer.next).toHaveBeenCalled()
     })
   })
 })

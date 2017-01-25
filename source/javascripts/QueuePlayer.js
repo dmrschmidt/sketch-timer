@@ -4,6 +4,7 @@ function QueuePlayer(soundCloudAPI) {
   this.soundCloudAPI = soundCloudAPI
 
   this.player = null
+  this.playlist = null
   this.preBufferPromise = new Promise(function(resolve, reject) {
     this.resolvePreBuffering = resolve
     this.rejectPreBuffering = reject
@@ -14,16 +15,24 @@ QueuePlayer.prototype.constructor = QueuePlayer
 QueuePlayer.prototype.prepare = function() {
   this.soundCloudAPI
     .get(defaultPlaylistUrl)
-    .then(this.selectRandomTrack.bind(this))
+    .then(this.processLoadedPlaylist.bind(this))
 }
 
-QueuePlayer.prototype.selectRandomTrack = function(playlist) {
-  var randomTrackId = Math.floor(Math.random() * playlist.tracks.length)
-  var randomTrack = playlist.tracks[randomTrackId]
-  var randomTrackUrl = 'tracks/' + randomTrack.id
+QueuePlayer.prototype.processLoadedPlaylist = function(playlist) {
+  this.playlist = playlist
+  this.bufferRandomTrack()
+}
 
-  console.log('picked track')
-  console.log(randomTrack)
+QueuePlayer.prototype.pickRandomTrack = function() {
+  var randomTrackId = Math.floor(Math.random() * this.playlist.tracks.length)
+  var randomTrack = this.playlist.tracks[randomTrackId]
+  console.log(randomTrack);
+  return randomTrack
+}
+
+QueuePlayer.prototype.bufferRandomTrack = function() {
+  var randomTrack = this.pickRandomTrack()
+  var randomTrackUrl = 'tracks/' + randomTrack.id
 
   this.soundCloudAPI
     .stream(randomTrackUrl)
@@ -48,6 +57,10 @@ QueuePlayer.prototype.stop = function() {
   this.pause()
 
   if (this.player != null) { this.player.seek(0) }
+}
+
+QueuePlayer.prototype.next = function() {
+
 }
 
 QueuePlayer.prototype.isPlaying = function() {

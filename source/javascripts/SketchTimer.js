@@ -9,16 +9,18 @@ function SketchTimer(element, container, timeFormatter, queuePlayer) {
   this.lastTapTime = 0
   this.longTapThresholdMs = 400
   this.longTapTimer = null
+  this.shakeGestureRecognizer = null
 }
 SketchTimer.prototype.constructor = SketchTimer
 
 SketchTimer.prototype.init = function() {
   this.reset()
-  this.registerEvents()
+  this.registerTapEvents()
+  this.registerShakeEvent()
   this.queuePlayer.prepare()
 }
 
-SketchTimer.prototype.registerEvents = function() {
+SketchTimer.prototype.registerTapEvents = function() {
   this.container.on('mousedown touchstart', function(event) {
     event.preventDefault()
     this.lastTapTime = Date.now()
@@ -34,6 +36,13 @@ SketchTimer.prototype.registerEvents = function() {
   }.bind(this))
 }
 
+SketchTimer.prototype.registerShakeEvent = function() {
+  this.shakeGestureRecognizer = new Shake()
+  this.shakeGestureRecognizer.start()
+
+  window.addEventListener('shake', this.shake, false)
+}
+
 SketchTimer.prototype.shortTap = function() {
   if (this.countdownTime == 0) return
 
@@ -45,6 +54,11 @@ SketchTimer.prototype.shortTap = function() {
 SketchTimer.prototype.longTap = function() {
   console.log('long press')
   this.reset()
+}
+
+SketchTimer.prototype.shake = function() {
+  console.log('shake!')
+  this.queuePlayer.next()
 }
 
 SketchTimer.prototype.reset = function() {
