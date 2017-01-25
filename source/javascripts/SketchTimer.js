@@ -4,6 +4,7 @@ function SketchTimer(element, container, timeFormatter, queuePlayer) {
   this.timeFormatter = timeFormatter
   this.queuePlayer = queuePlayer
 
+  this.queuePlayer.delegate = this
   this.sketchingDuration = 420
   this.timer = null
   this.lastTapTime = 0
@@ -49,6 +50,13 @@ SketchTimer.prototype.shortTap = function() {
   this.isActive()
     ? this.pause()
     : this.play()
+}
+
+SketchTimer.prototype.didSwitchTrack = function() {
+  this.container.addClass('switching')
+  setTimeout(function() {
+    this.container.removeClass('switching')
+  }.bind(this), 400)
 }
 
 SketchTimer.prototype.longTap = function() {

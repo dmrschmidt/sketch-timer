@@ -128,12 +128,16 @@ describe("QueuePlayer", function() {
 
   describe("next", function() {
     var newPlayer
+    var delegate
 
     beforeEach(function(done) {
       newPlayer = new FakePlayer()
+      delegate = { didSwitchTrack: function() {} }
       queuePlayer.playlist = { tracks: [ {id: 43}]}
       queuePlayer.player = player
+      queuePlayer.delegate = delegate
 
+      spyOn(delegate, "didSwitchTrack").and.callThrough()
       spyOn(soundCloudAPI, "stream").and.callThrough()
       queuePlayer.next()
       queuePlayer.resolvePreBuffering(newPlayer)
@@ -142,6 +146,10 @@ describe("QueuePlayer", function() {
 
     it("buffers a new random track", function() {
       expect(soundCloudAPI.stream).toHaveBeenCalled()
+    })
+
+    it("informs it's delegate about the track switch", function() {
+      expect(delegate.didSwitchTrack).toHaveBeenCalled()
     })
 
     describe("when not already playing", function() {

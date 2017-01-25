@@ -121,4 +121,22 @@ describe("SketchTimer", function() {
       expect(queuePlayer.next).toHaveBeenCalled()
     })
   })
+
+  describe("didSwitchTrack", function() {
+    it("marks timer as switching", function() {
+      sketchTimer.didSwitchTrack()
+      expect(container.hasClass('switching')).toBeTruthy()
+    })
+
+    describe("after a short timeout", function() {
+      beforeEach(function(done) {
+        sketchTimer.didSwitchTrack()
+        setTimeout(done, 500)
+      })
+
+      it("marks timer as normal again", function() {
+        expect(container.hasClass('switching')).toBeFalsy()
+      })
+    })
+  })
 })

@@ -66,6 +66,7 @@ QueuePlayer.prototype.stop = function() {
 
 QueuePlayer.prototype.next = function() {
   var keepPlaying = this.isPlaying()
+  if (this.delegate != null) this.delegate.didSwitchTrack()
   this.stop()
   this.initPrebuffering()
   this.bufferRandomTrack()
