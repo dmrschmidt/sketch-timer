@@ -21,8 +21,19 @@ if (environmentVariablesMissing) {
   });
 }
 
+function getJsonFromUrl() {
+  var query = location.search.substr(1)
+  var result = {}
+  query.split("&").forEach(function(part) {
+    var item = part.split("=")
+    result[item[0]] = decodeURIComponent(item[1])
+  })
+  return result
+}
+
 $(document).ready(function() {
-  queuePlayer = new QueuePlayer(SC)
+  var passedPlaylistUrl = getJsonFromUrl().playlist
+  queuePlayer = new QueuePlayer(SC, passedPlaylistUrl)
   sleepPreventer = new SleepPreventer(new NoSleep())
   sketchTimer = new SketchTimer($('#timer'), $('html'), timeFormatter, queuePlayer, sleepPreventer)
   sketchTimer.init()

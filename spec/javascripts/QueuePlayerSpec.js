@@ -12,7 +12,7 @@ function FakeSoundCloudAPI() {}
 FakeSoundCloudAPI.prototype.stream = function() {
   return new ArgumentCaptor()
 }
-FakeSoundCloudAPI.prototype.get = function(url) {
+FakeSoundCloudAPI.prototype.resolve = function(url) {
   this.lastUrl = url
   return new ArgumentCaptor()
 }
@@ -28,27 +28,42 @@ describe("QueuePlayer", function() {
   var queuePlayer
   var player
   var soundCloudAPI
+  var myPlaylistUrl
 
   beforeEach(function() {
+    myPlaylistUrl = 'https://soundcloud.com/foo'
     soundCloudAPI = new FakeSoundCloudAPI()
-    queuePlayer = new QueuePlayer(soundCloudAPI)
+    queuePlayer = new QueuePlayer(soundCloudAPI, myPlaylistUrl)
     player = new FakePlayer()
   })
 
   describe("prepare", function() {
-    it("loads the given playlist", function() {
-      queuePlayer.prepare()
-      expect(soundCloudAPI.lastUrl).toEqual('playlists/47514837')
+    describe("when no playlistUrl was provided", function() {
+      beforeEach(function() {
+        queuePlayer = new QueuePlayer(soundCloudAPI, undefined)
+      })
+
+      it("loads the default playlist", function() {
+        queuePlayer.prepare()
+        expect(soundCloudAPI.lastUrl).toEqual(defaultPlaylistUrl)
+      })
+    })
+
+    describe("when playlistUrl was provided", function() {
+      it("loads the provided playlist", function() {
+        queuePlayer.prepare()
+        expect(soundCloudAPI.lastUrl).toEqual(myPlaylistUrl)
+      })
     })
 
     describe("when playlist is loaded", function() {
-      var getPlaylistCall
+      var resolvePlaylistCall
       var streamCall
 
       beforeEach(function() {
-        getPlaylistCall = new ArgumentCaptor()
+        resolvePlaylistCall = new ArgumentCaptor()
         streamCall = new ArgumentCaptor()
-        spyOn(soundCloudAPI, "get").and.callFake(function(url) { return getPlaylistCall })
+        spyOn(soundCloudAPI, "resolve").and.callFake(function(url) { return resolvePlaylistCall })
         spyOn(soundCloudAPI, "stream").and.callFake(function(url) { return streamCall })
 
         queuePlayer.prepare()
@@ -56,7 +71,7 @@ describe("QueuePlayer", function() {
 
       it("buffers a track from that playlist", function() {
         var playlist = { tracks: [ {id: 42}]}
-        getPlaylistCall.closure(playlist)
+        resolvePlaylistCall.closure(playlist)
 
         expect(soundCloudAPI.stream).toHaveBeenCalledWith('tracks/42')
       })

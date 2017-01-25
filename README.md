@@ -4,10 +4,24 @@
 
 Go to https://zeebn.cfapps.io and add it to your home screen to run as a dedicated web app on your mobile.
 
+## Controls
+
 * **play** - tap the screen
 * **pause** - tap the screen
 * **reset** - long-tap the screen
 * **change track** - shake the phone
+
+## Custom Playlists / Music
+
+By default, Zeebn plays randomly selected tracks from a default
+SoundCloud playlist. You can, however customize the playlist.
+Simply add a url parameter `playlist` to the URL. The value
+needs to be the full URL of that playlist, as it is shown in your
+browser's URL bar when viewing the playlist on SoundCloud.
+
+For instance:
+
+> http://zeebn.cfapps.io?playlist=https://soundcloud.com/metzeltiger/sets/berghain
 
 ## Limitations
 

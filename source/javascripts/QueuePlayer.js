@@ -1,7 +1,8 @@
-var defaultPlaylistUrl = 'playlists/47514837' // https://soundcloud.com/koholaa/sets/soundcloud-kitchen-playlist
+var defaultPlaylistUrl = 'https://soundcloud.com/koholaa/sets/soundcloud-kitchen-playlist'
 
-function QueuePlayer(soundCloudAPI) {
+function QueuePlayer(soundCloudAPI, passedPlaylistUrl) {
   this.soundCloudAPI = soundCloudAPI
+  this.playlistUrl = passedPlaylistUrl || defaultPlaylistUrl
 
   this.player = null
   this.playlist = null
@@ -19,7 +20,7 @@ QueuePlayer.prototype.initPrebuffering = function() {
 
 QueuePlayer.prototype.prepare = function() {
   this.soundCloudAPI
-    .get(defaultPlaylistUrl)
+    .resolve(this.playlistUrl)
     .then(this.processLoadedPlaylist.bind(this))
 }
 
