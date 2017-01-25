@@ -82,6 +82,8 @@ SketchTimer.prototype.isActive = function() {
 
 SketchTimer.prototype.play = function() {
   console.log('requested play')
+  clearInterval(this.timer)
+
   this.queuePlayer.play()
   this.container.addClass('active')
   this.timer = setInterval(this.update.bind(this), 1000)
