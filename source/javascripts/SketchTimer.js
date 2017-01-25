@@ -38,7 +38,7 @@ SketchTimer.prototype.registerTapEvents = function() {
 }
 
 SketchTimer.prototype.registerShakeEvent = function() {
-  this.shakeGestureRecognizer = new Shake()
+  this.shakeGestureRecognizer = new Shake({ threshold: 8 })
   this.shakeGestureRecognizer.start()
 
   window.addEventListener('shake', this.shake, false)
