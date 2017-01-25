@@ -7,23 +7,23 @@
         <meta name="description" content="">
         <meta content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" name="viewport">
 
-        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         <meta name="apple-mobile-web-app-title" content="<%= current_page.data.title || "Zeebn" %>">
-        <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <%= yield_content :meta %>
 
-        <link rel="stylesheet" href="stylesheets/normalize.min.css">
-        <link rel="stylesheet" href="stylesheets/main.css">
+        <link rel="stylesheet" href="/stylesheets/normalize.min.css">
+        <link rel="stylesheet" href="/stylesheets/main.css">
         <link href="https://fonts.googleapis.com/css?family=Khand" rel="stylesheet">
 
-        <script src="javascripts/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
+        <script src="/javascripts/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
     </head>
     <body>
       <%= yield %>
 
       <script src="https://connect.soundcloud.com/sdk/sdk-3.1.2.js"></script>
-      <script src="javascripts/jquery-3.1.1.min.js"></script>
+      <script src="/javascripts/jquery-3.1.1.min.js"></script>
       <%= yield_content :scripts %>
     </body>
 </html>
