@@ -1,4 +1,3 @@
-
 function FakeQueuePlayer() { this.playing = false }
 FakeQueuePlayer.prototype.prepare = function() {}
 FakeQueuePlayer.prototype.play = function() { this.playing = true }
@@ -7,19 +6,24 @@ FakeQueuePlayer.prototype.stop = function() { this.playing = false }
 FakeQueuePlayer.prototype.next = function() {}
 FakeQueuePlayer.prototype.isPlaying = function() { return this.playing }
 
+function FakeSleepPreventer() { this.sleepPreventionEnabled = false; this.lastElement = null }
+FakeSleepPreventer.prototype.watchSleepPrevention = function(element) { this.sleepPreventionEnabled = true; this.lastElement = element; }
+
 describe("SketchTimer", function() {
   var sketchTimer
   var element
   var container
   var timeFormatter
   var queuePlayer
+  var sleepPreventer
 
   beforeEach(function() {
     queuePlayer = new FakeQueuePlayer()
+    sleepPreventer = new FakeSleepPreventer()
     element = $('<div>')
     container = $('<div>')
     timeFormatter = new TimeFormatter()
-    sketchTimer = new SketchTimer(element, container, timeFormatter, queuePlayer)
+    sketchTimer = new SketchTimer(element, container, timeFormatter, queuePlayer, sleepPreventer)
     sketchTimer.init()
   })
 
@@ -42,6 +46,10 @@ describe("SketchTimer", function() {
       done()
     }, 500)
   }
+
+  it("initiates sleep prevention watching", function() {
+    expect(sleepPreventer.sleepPreventionEnabled).toBeTruthy()
+  })
 
   describe("tapping the container quickly", function() {
     describe("toggles the timer / player", function() {

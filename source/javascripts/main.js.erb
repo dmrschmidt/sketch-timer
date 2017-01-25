@@ -1,6 +1,7 @@
 var timeFormatter = new TimeFormatter()
 var queuePlayer
 var sketchTimer
+var sleepPreventer
 
 var environmentVariablesMissing = <%= ENV['SOUNDCLOUD_CLIENT_ID'].nil? %>
 var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0 || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || safari.pushNotification) || navigator.userAgent.match(/iPhone/i)
@@ -22,6 +23,7 @@ if (environmentVariablesMissing) {
 
 $(document).ready(function() {
   queuePlayer = new QueuePlayer(SC)
-  sketchTimer = new SketchTimer($('#timer'), $('html'), timeFormatter, queuePlayer)
+  sleepPreventer = new SleepPreventer(new NoSleep())
+  sketchTimer = new SketchTimer($('#timer'), $('html'), timeFormatter, queuePlayer, sleepPreventer)
   sketchTimer.init()
 })

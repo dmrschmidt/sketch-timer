@@ -1,8 +1,9 @@
-function SketchTimer(element, container, timeFormatter, queuePlayer) {
+function SketchTimer(element, container, timeFormatter, queuePlayer, sleepPreventer) {
   this.element = element
   this.container = container
   this.timeFormatter = timeFormatter
   this.queuePlayer = queuePlayer
+  this.sleepPreventer = sleepPreventer
 
   this.queuePlayer.delegate = this
   this.sketchingDuration = 420
@@ -19,6 +20,7 @@ SketchTimer.prototype.init = function() {
   this.registerTapEvents()
   this.registerShakeEvent()
   this.queuePlayer.prepare()
+  this.sleepPreventer.watchSleepPrevention(this.container)
 }
 
 SketchTimer.prototype.registerTapEvents = function() {
