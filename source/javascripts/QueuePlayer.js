@@ -5,12 +5,17 @@ function QueuePlayer(soundCloudAPI) {
 
   this.player = null
   this.playlist = null
+  this.delegate = null
+  this.initPrebuffering()
+}
+QueuePlayer.prototype.constructor = QueuePlayer
+
+QueuePlayer.prototype.initPrebuffering = function() {
   this.preBufferPromise = new Promise(function(resolve, reject) {
     this.resolvePreBuffering = resolve
     this.rejectPreBuffering = reject
   }.bind(this))
 }
-QueuePlayer.prototype.constructor = QueuePlayer
 
 QueuePlayer.prototype.prepare = function() {
   this.soundCloudAPI
@@ -60,7 +65,14 @@ QueuePlayer.prototype.stop = function() {
 }
 
 QueuePlayer.prototype.next = function() {
+  var keepPlaying = this.isPlaying()
+  this.stop()
+  this.initPrebuffering()
+  this.bufferRandomTrack()
 
+  if (keepPlaying) {
+    this.play()
+  }
 }
 
 QueuePlayer.prototype.isPlaying = function() {

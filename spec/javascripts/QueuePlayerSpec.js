@@ -26,11 +26,13 @@ FakePlayer.prototype.on = function(event, handler) { this.lastEvent = event; thi
 
 describe("QueuePlayer", function() {
   var queuePlayer
+  var player
   var soundCloudAPI
 
   beforeEach(function() {
     soundCloudAPI = new FakeSoundCloudAPI()
     queuePlayer = new QueuePlayer(soundCloudAPI)
+    player = new FakePlayer()
   })
 
   describe("prepare", function() {
@@ -62,10 +64,7 @@ describe("QueuePlayer", function() {
   })
 
   describe("play", function() {
-    var player
-
     beforeEach(function() {
-      player = new FakePlayer()
       queuePlayer.play()
     })
 
@@ -100,7 +99,7 @@ describe("QueuePlayer", function() {
 
   describe("pause", function() {
     beforeEach(function() {
-      queuePlayer.player = new FakePlayer()
+      queuePlayer.player = player
       queuePlayer.player.playing = true
     })
 
@@ -111,10 +110,7 @@ describe("QueuePlayer", function() {
   })
 
   describe("stop", function() {
-    var player
-
     beforeEach(function() {
-      player = new FakePlayer()
       queuePlayer.player = player
       queuePlayer.player.playing = true
     })
@@ -127,6 +123,49 @@ describe("QueuePlayer", function() {
     it("rewinds the track", function() {
       queuePlayer.stop()
       expect(player.lastSeek).toEqual(0)
+    })
+  })
+
+  describe("next", function() {
+    var newPlayer
+
+    beforeEach(function(done) {
+      newPlayer = new FakePlayer()
+      queuePlayer.playlist = { tracks: [ {id: 43}]}
+      queuePlayer.player = player
+
+      spyOn(soundCloudAPI, "stream").and.callThrough()
+      queuePlayer.next()
+      queuePlayer.resolvePreBuffering(newPlayer)
+      setTimeout(done, 50) // give buffering Promise time to resolve
+    })
+
+    it("buffers a new random track", function() {
+      expect(soundCloudAPI.stream).toHaveBeenCalled()
+    })
+
+    describe("when not already playing", function() {
+      it("does NOT start playback with new track", function() {
+        expect(queuePlayer.player.isPlaying()).toBeFalsy()
+      })
+    })
+
+    describe("when already playing", function() {
+      beforeEach(function(done) {
+        queuePlayer.player.playing = true
+
+        queuePlayer.next()
+        queuePlayer.resolvePreBuffering(newPlayer)
+        setTimeout(done, 50) // give buffering Promise time to resolve
+      })
+
+      it("stops current playback", function() {
+        expect(player.isPlaying()).toBeFalsy()
+      })
+
+      it("continues playback with new track", function() {
+        expect(queuePlayer.player.isPlaying()).toBeTruthy()
+      })
     })
   })
 })
