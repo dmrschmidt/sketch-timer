@@ -2,11 +2,26 @@
 
 # Usage
 
-Go to https://zeebn.cfapps.io and add it to your home screen to run as a dedicated app on your mobile.
+Go to https://zeebn.cfapps.io and add it to your home screen to run as a dedicated web app on your mobile.
 
 * **play** - tap the screen
 * **pause** - tap the screen
 * **reset** - long-tap the screen
+* **change track** - shake the phone
+
+## Limitations
+
+### Device Idle Timer Workaround
+
+Adding Zeebn to your home screen, however has the annoying side effect that *device sleep can not be prevented*.
+Quite annoying for a timer like this, since also the music playback stops.
+
+A workaround for this is to instead add https://zeebn.cfapps.io/awake to your home screen.
+That will keep the unattractive browser canvas visible but at least the device sleep timer will be disabled.
+
+### Browser Compatibility
+
+Unfortunately, the used SoundCloud JavaScript SDK does currently only play correctly on iOS devices with Safari.
 
 # Development / SetUp
 
@@ -31,11 +46,4 @@ required environment variables and other configurations.
 
 ```bash
 rake cf:deploy
-```
-
-or
-
-```bash
-middleman build
-cf push sketch-timer -p build/ -b https://github.com/cloudfoundry-incubator/staticfile-buildpack.git
 ```
