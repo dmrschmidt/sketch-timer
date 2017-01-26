@@ -17,30 +17,36 @@ FakeSoundCloudAPI.prototype.resolve = function(url) {
   return new ArgumentCaptor()
 }
 
-function FakePlayer() { this.playing = false }
-FakePlayer.prototype.play = function() { this.playing = true }
-FakePlayer.prototype.pause = function() { this.playing = false }
-FakePlayer.prototype.seek = function(timestamp) { this.lastSeek = timestamp }
-FakePlayer.prototype.isPlaying = function() { return this.playing }
+function FakePlayer() { this.playState = 0; this.paused = true; }
+FakePlayer.prototype.play = function() { this.playState = 1; this.paused = false; }
+FakePlayer.prototype.pause = function() { this.playState = 1; this.paused = true; }
+FakePlayer.prototype.stop = function() { this.playState = 0; this.paused = true; }
 FakePlayer.prototype.on = function(event, handler) { this.lastEvent = event; this.lastHandler = handler; }
+
+function FakeSoundManager() {}
+FakeSoundManager.prototype.createSound = function(options) { this.lastOptions = options; return new FakePlayer(); }
 
 describe("QueuePlayer", function() {
   var queuePlayer
   var player
   var soundCloudAPI
+  var soundManager
+  var apiKey
   var myPlaylistUrl
 
   beforeEach(function() {
     myPlaylistUrl = 'https://soundcloud.com/foo'
     soundCloudAPI = new FakeSoundCloudAPI()
-    queuePlayer = new QueuePlayer(soundCloudAPI, myPlaylistUrl)
+    soundManager = new FakeSoundManager()
+    apiKey = 'apiKey'
+    queuePlayer = new QueuePlayer(soundCloudAPI, soundManager, apiKey, myPlaylistUrl)
     player = new FakePlayer()
   })
 
   describe("prepare", function() {
     describe("when no playlistUrl was provided", function() {
       beforeEach(function() {
-        queuePlayer = new QueuePlayer(soundCloudAPI, undefined)
+        queuePlayer = new QueuePlayer(soundCloudAPI, undefined, undefined)
       })
 
       it("loads the default playlist", function() {
@@ -56,88 +62,63 @@ describe("QueuePlayer", function() {
       })
     })
 
-    describe("when playlist is loaded", function() {
+    describe("when playlist is resolved", function() {
       var resolvePlaylistCall
-      var streamCall
+      var playlist
 
       beforeEach(function() {
         resolvePlaylistCall = new ArgumentCaptor()
-        streamCall = new ArgumentCaptor()
+        playlist = { tracks: [{ stream_url: '/stream/tracks/42' }] }
         spyOn(soundCloudAPI, "resolve").and.callFake(function(url) { return resolvePlaylistCall })
-        spyOn(soundCloudAPI, "stream").and.callFake(function(url) { return streamCall })
-
         queuePlayer.prepare()
+        resolvePlaylistCall.closure(playlist)
+      })
+
+      it("configures player for a track with authorization", function() {
+        var authorizedStreamUrl = playlist.tracks[0].stream_url + '?consumer_key=' + apiKey
+        expect(soundManager.lastOptions.url).toEqual(authorizedStreamUrl)
       })
 
       it("buffers a track from that playlist", function() {
-        var playlist = { tracks: [ {id: 42}]}
-        resolvePlaylistCall.closure(playlist)
-
-        expect(soundCloudAPI.stream).toHaveBeenCalledWith('tracks/42')
+        expect(soundManager.lastOptions.autoLoad).toBeTruthy()
       })
     })
   })
 
   describe("play", function() {
     beforeEach(function() {
+      queuePlayer.player = player
+    })
+
+    it("plays the track", function() {
       queuePlayer.play()
-    })
-
-    describe("when track is not yet buffered", function() {
-      it("does not do anything", function() {
-        expect(queuePlayer.isPlaying()).toBeFalsy()
-      })
-    })
-
-    describe("when track is buffered", function() {
-      beforeEach(function(done) {
-        spyOn(player, "seek").and.callThrough()
-        spyOn(player, "play").and.callThrough()
-
-        queuePlayer.resolvePreBuffering(player)
-        setTimeout(done, 50) // give buffering Promise time to resolve
-      })
-
-      it("configures player for eternal repeat", function() {
-        player.lastHandler()
-
-        expect(player.lastEvent).toEqual('finish')
-        expect(player.seek).toHaveBeenCalledWith(0)
-        expect(player.play).toHaveBeenCalled()
-      })
-
-      it("starts playing track", function() {
-        expect(player.isPlaying()).toBeTruthy()
-      })
+      expect(queuePlayer.isPlaying()).toBeTruthy()
     })
   })
 
   describe("pause", function() {
     beforeEach(function() {
       queuePlayer.player = player
-      queuePlayer.player.playing = true
+      queuePlayer.player.playState = 1
+      queuePlayer.player.paused = false
     })
 
-    it("pauses the SoundCloud player", function() {
+    it("pauses the track", function() {
       queuePlayer.pause()
-      expect(queuePlayer.player.isPlaying()).toBeFalsy()
+      expect(queuePlayer.isPlaying()).toBeFalsy()
     })
   })
 
   describe("stop", function() {
     beforeEach(function() {
       queuePlayer.player = player
-      queuePlayer.player.playing = true
+      queuePlayer.player.playState = 1
+      queuePlayer.player.paused = false
     })
 
-    it("stops the SoundCloud player", function() {
+    it("stops the track", function() {
       queuePlayer.stop()
-      expect(queuePlayer.player.isPlaying()).toBeFalsy()
-    })
-
-    it("rewinds the track", function() {
-      queuePlayer.stop()
-      expect(player.lastSeek).toEqual(0)
+      expect(queuePlayer.isPlaying()).toBeFalsy()
     })
   })
 
@@ -145,49 +126,47 @@ describe("QueuePlayer", function() {
     var newPlayer
     var delegate
 
-    beforeEach(function(done) {
+    beforeEach(function() {
       newPlayer = new FakePlayer()
       delegate = { didSwitchTrack: function() {} }
-      queuePlayer.playlist = { tracks: [ {id: 43}]}
+      queuePlayer.playlist = { tracks: [{ stream_url: '/stream/tracks/43' }] }
       queuePlayer.player = player
       queuePlayer.delegate = delegate
 
       spyOn(delegate, "didSwitchTrack").and.callThrough()
-      spyOn(soundCloudAPI, "stream").and.callThrough()
-      queuePlayer.next()
-      queuePlayer.resolvePreBuffering(newPlayer)
-      setTimeout(done, 50) // give buffering Promise time to resolve
     })
 
     it("buffers a new random track", function() {
-      expect(soundCloudAPI.stream).toHaveBeenCalled()
+      queuePlayer.next()
+      expect(soundManager.lastOptions.autoLoad).toBeTruthy()
     })
 
     it("informs it's delegate about the track switch", function() {
+      queuePlayer.next()
       expect(delegate.didSwitchTrack).toHaveBeenCalled()
     })
 
     describe("when not already playing", function() {
       it("does NOT start playback with new track", function() {
-        expect(queuePlayer.player.isPlaying()).toBeFalsy()
+        queuePlayer.next()
+        expect(queuePlayer.isPlaying()).toBeFalsy()
       })
     })
 
     describe("when already playing", function() {
-      beforeEach(function(done) {
-        queuePlayer.player.playing = true
+      beforeEach(function() {
+        queuePlayer.player.playState = 1
+        queuePlayer.player.paused = false
 
         queuePlayer.next()
-        queuePlayer.resolvePreBuffering(newPlayer)
-        setTimeout(done, 50) // give buffering Promise time to resolve
       })
 
       it("stops current playback", function() {
-        expect(player.isPlaying()).toBeFalsy()
+        expect(player.playState).toEqual(0)
       })
 
       it("continues playback with new track", function() {
-        expect(queuePlayer.player.isPlaying()).toBeTruthy()
+        expect(queuePlayer.isPlaying()).toBeTruthy()
       })
     })
   })

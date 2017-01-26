@@ -33,7 +33,7 @@ function getJsonFromUrl() {
 
 $(document).ready(function() {
   var passedPlaylistUrl = getJsonFromUrl().playlist
-  queuePlayer = new QueuePlayer(SC, passedPlaylistUrl)
+  queuePlayer = new QueuePlayer(SC, soundManager, '<%= ENV['SOUNDCLOUD_CLIENT_ID'] %>', passedPlaylistUrl)
   sleepPreventer = new SleepPreventer(new NoSleep())
   sketchTimer = new SketchTimer($('#timer'), $('html'), timeFormatter, queuePlayer, sleepPreventer)
   sketchTimer.init()

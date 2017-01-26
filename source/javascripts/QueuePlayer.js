@@ -1,22 +1,16 @@
 var defaultPlaylistUrl = 'https://soundcloud.com/koholaa/sets/soundcloud-kitchen-playlist'
 
-function QueuePlayer(soundCloudAPI, passedPlaylistUrl) {
+function QueuePlayer(soundCloudAPI, soundManager, apiKey, passedPlaylistUrl) {
   this.soundCloudAPI = soundCloudAPI
+  this.soundManager = soundManager
+  this.apiKey = apiKey
   this.playlistUrl = passedPlaylistUrl || defaultPlaylistUrl
 
   this.player = null
   this.playlist = null
   this.delegate = null
-  this.initPrebuffering()
 }
 QueuePlayer.prototype.constructor = QueuePlayer
-
-QueuePlayer.prototype.initPrebuffering = function() {
-  this.preBufferPromise = new Promise(function(resolve, reject) {
-    this.resolvePreBuffering = resolve
-    this.rejectPreBuffering = reject
-  }.bind(this))
-}
 
 QueuePlayer.prototype.prepare = function() {
   this.soundCloudAPI
@@ -32,27 +26,27 @@ QueuePlayer.prototype.processLoadedPlaylist = function(playlist) {
 QueuePlayer.prototype.pickRandomTrack = function() {
   var randomTrackId = Math.floor(Math.random() * this.playlist.tracks.length)
   var randomTrack = this.playlist.tracks[randomTrackId]
-  console.log(randomTrack);
+  console.log(randomTrack)
   return randomTrack
 }
 
 QueuePlayer.prototype.bufferRandomTrack = function() {
   var randomTrack = this.pickRandomTrack()
-  var randomTrackUrl = 'tracks/' + randomTrack.id
+  var randomTrackUrl = randomTrack.stream_url + '?consumer_key=' + this.apiKey
+  console.log(randomTrack)
 
-  this.soundCloudAPI
-    .stream(randomTrackUrl)
-    .then(this.resolvePreBuffering.bind(this))
+  this.player = this.soundManager.createSound({
+    url: randomTrackUrl,
+    autoLoad: true,
+    onfinish: function() {
+      console.log('finished playback, repeating track')
+      this.play()
+    }
+  })
 }
 
 QueuePlayer.prototype.play = function() {
-  this.preBufferPromise.then(function(player) {
-    console.log('starting playback now')
-    this.configurePlayer(player)
-    this.player.play()
-  }.bind(this)).catch(function(error) {
-    console.log('SoundCloud error ' + error())
-  })
+  if (this.player != null) { this.player.play() }
 }
 
 QueuePlayer.prototype.pause = function() {
@@ -60,16 +54,13 @@ QueuePlayer.prototype.pause = function() {
 }
 
 QueuePlayer.prototype.stop = function() {
-  this.pause()
-
-  if (this.player != null) { this.player.seek(0) }
+  if (this.player != null) { this.player.stop() }
 }
 
 QueuePlayer.prototype.next = function() {
   var keepPlaying = this.isPlaying()
-  if (this.delegate != null) this.delegate.didSwitchTrack()
+  if (this.delegate != null) { this.delegate.didSwitchTrack() }
   this.stop()
-  this.initPrebuffering()
   this.bufferRandomTrack()
 
   if (keepPlaying) {
@@ -78,18 +69,7 @@ QueuePlayer.prototype.next = function() {
 }
 
 QueuePlayer.prototype.isPlaying = function() {
-  return (this.player != null) && this.player.isPlaying()
-}
-
-QueuePlayer.prototype.configurePlayer = function(player) {
-  this.player = player
-  this.configurePlayerForEternalRepeat()
-}
-
-QueuePlayer.prototype.configurePlayerForEternalRepeat = function() {
-  this.player.on('finish', function() {
-    console.log('finished playback, repeating track')
-    this.player.seek(0)
-    this.player.play()
-  }.bind(this))
+  return this.player != null
+    && this.player.playState == 1
+    && !this.player.paused
 }
