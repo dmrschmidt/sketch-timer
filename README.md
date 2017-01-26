@@ -7,6 +7,8 @@ run as a dedicated web app on your mobile.
 
 By default, Zeebn runs a timer for 7 minutes. Tracks are
 shuffled from the selected playlist each time the app opens.
+Playback is continuous, i.e. when a track finishes before the
+timer runs out, the next track will be played seamlessly.
 A warning tone will signal when 2 minutes are remaining and an
 ending tone, when the timer is about to run out.
 

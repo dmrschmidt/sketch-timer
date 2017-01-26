@@ -39,8 +39,8 @@ QueuePlayer.prototype.bufferRandomTrack = function() {
     autoLoad: true,
     onfinish: function() {
       console.log('finished playback, repeating track')
-      this.play()
-    }
+      this.next(true)
+    }.bind(this)
   })
 }
 
@@ -64,9 +64,11 @@ QueuePlayer.prototype.stop = function() {
   if (this.player != null) { this.player.stop() }
 }
 
-QueuePlayer.prototype.next = function() {
-  var keepPlaying = this.isPlaying()
-  if (this.delegate != null) { this.delegate.didSwitchTrack() }
+QueuePlayer.prototype.next = function(shouldKeepPlayingSeamlessly) {
+  var keepPlaying = shouldKeepPlayingSeamlessly || this.isPlaying()
+  if (this.delegate != null && !shouldKeepPlayingSeamlessly) {
+    this.delegate.didSwitchTrack()
+  }
   this.stop()
   this.bufferRandomTrack()
 

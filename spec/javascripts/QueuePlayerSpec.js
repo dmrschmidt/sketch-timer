@@ -37,14 +37,19 @@ describe("QueuePlayer", function() {
   var soundManager
   var apiKey
   var myPlaylistUrl
+  var resolvePlaylistCall
+  var playlist
+  var delegate
 
   beforeEach(function() {
     myPlaylistUrl = 'https://soundcloud.com/foo'
     soundCloudAPI = new FakeSoundCloudAPI()
     soundManager = new FakeSoundManager()
     apiKey = 'apiKey'
+    delegate = { didSwitchTrack: function() {} }
     queuePlayer = new QueuePlayer(soundCloudAPI, soundManager, apiKey, myPlaylistUrl)
     player = new FakePlayer()
+    queuePlayer.delegate = delegate
   })
 
   describe("prepare", function() {
@@ -67,9 +72,6 @@ describe("QueuePlayer", function() {
     })
 
     describe("when playlist is resolved", function() {
-      var resolvePlaylistCall
-      var playlist
-
       beforeEach(function() {
         resolvePlaylistCall = new ArgumentCaptor()
         playlist = { tracks: [{ stream_url: '/stream/tracks/42' }] }
@@ -86,6 +88,27 @@ describe("QueuePlayer", function() {
       it("buffers a track from that playlist", function() {
         expect(soundManager.lastOptions.autoLoad).toBeTruthy()
       })
+    })
+  })
+
+  describe("seamless playback", function() {
+    beforeEach(function() {
+      resolvePlaylistCall = new ArgumentCaptor()
+      playlist = { tracks: [{ stream_url: '/stream/tracks/42' }] }
+      spyOn(soundCloudAPI, "resolve").and.callFake(function(url) { return resolvePlaylistCall })
+      queuePlayer.prepare()
+      resolvePlaylistCall.closure(playlist)
+    })
+
+    it("plays next track once current finishes", function() {
+      soundManager.lastOptions.onfinish()
+      expect(soundManager.lastPlayer).not.toEqual(player)
+    })
+
+    it("plays next track silently once current finishes", function() {
+      spyOn(delegate, "didSwitchTrack")
+      soundManager.lastOptions.onfinish()
+      expect(delegate.didSwitchTrack).not.toHaveBeenCalled()
     })
   })
 
@@ -128,14 +151,12 @@ describe("QueuePlayer", function() {
 
   describe("next", function() {
     var newPlayer
-    var delegate
+
 
     beforeEach(function() {
       newPlayer = new FakePlayer()
-      delegate = { didSwitchTrack: function() {} }
       queuePlayer.playlist = { tracks: [{ stream_url: '/stream/tracks/43' }] }
       queuePlayer.player = player
-      queuePlayer.delegate = delegate
 
       spyOn(delegate, "didSwitchTrack").and.callThrough()
     })
