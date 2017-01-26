@@ -33,7 +33,6 @@ QueuePlayer.prototype.pickRandomTrack = function() {
 QueuePlayer.prototype.bufferRandomTrack = function() {
   var randomTrack = this.pickRandomTrack()
   var randomTrackUrl = randomTrack.stream_url + '?consumer_key=' + this.apiKey
-  console.log(randomTrack)
 
   this.player = this.soundManager.createSound({
     url: randomTrackUrl,
