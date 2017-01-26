@@ -2,7 +2,13 @@
 
 # Usage
 
-Go to https://zeebn.cfapps.io and add it to your home screen to run as a dedicated web app on your mobile.
+Go to https://zeebn.cfapps.io and add it to your home screen to
+run as a dedicated web app on your mobile.
+
+By default, Zeebn runs a timer for 7 minutes. Tracks are
+shuffled from the selected playlist each time the app opens.
+A warning tone will signal when 2 minutes are remaining and an
+ending tone, when the timer is about to run out.
 
 ## Controls
 

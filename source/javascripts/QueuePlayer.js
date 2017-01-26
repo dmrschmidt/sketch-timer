@@ -44,6 +44,14 @@ QueuePlayer.prototype.bufferRandomTrack = function() {
   })
 }
 
+QueuePlayer.prototype.signalWarning = function () {
+  this.soundManager.createSound({ url: '/resources/warning.mp3' }).play()
+}
+
+QueuePlayer.prototype.signalEnding = function () {
+  this.soundManager.createSound({ url: '/resources/ending.mp3' }).play()
+}
+
 QueuePlayer.prototype.play = function() {
   if (this.player != null) { this.player.play() }
 }

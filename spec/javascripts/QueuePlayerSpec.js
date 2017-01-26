@@ -23,8 +23,12 @@ FakePlayer.prototype.pause = function() { this.playState = 1; this.paused = true
 FakePlayer.prototype.stop = function() { this.playState = 0; this.paused = true; }
 FakePlayer.prototype.on = function(event, handler) { this.lastEvent = event; this.lastHandler = handler; }
 
-function FakeSoundManager() {}
-FakeSoundManager.prototype.createSound = function(options) { this.lastOptions = options; return new FakePlayer(); }
+function FakeSoundManager() { this.lastPlayer = null }
+FakeSoundManager.prototype.createSound = function(options) {
+  this.lastOptions = options
+  this.lastPlayer = new FakePlayer()
+  return this.lastPlayer
+}
 
 describe("QueuePlayer", function() {
   var queuePlayer
@@ -168,6 +172,22 @@ describe("QueuePlayer", function() {
       it("continues playback with new track", function() {
         expect(queuePlayer.isPlaying()).toBeTruthy()
       })
+    })
+  })
+
+  describe("signalWarning", function() {
+    it("plays a warning sound", function() {
+      queuePlayer.signalWarning()
+      expect(soundManager.lastOptions.url).toEqual('/resources/warning.mp3')
+      expect(soundManager.lastPlayer.playState).toEqual(1)
+    })
+  })
+
+  describe("signalEnding", function() {
+    it("plays a warning sound", function() {
+      queuePlayer.signalEnding()
+      expect(soundManager.lastOptions.url).toEqual('/resources/ending.mp3')
+      expect(soundManager.lastPlayer.playState).toEqual(1)
     })
   })
 })
