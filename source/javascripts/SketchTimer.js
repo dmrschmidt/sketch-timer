@@ -7,7 +7,6 @@ function SketchTimer(element, container, timeFormatter, queuePlayer, sleepPreven
 
   this.queuePlayer.delegate = this
   this.sketchingDuration = 7 * 60
-  this.sketchingWarningTime = 2 * 60
   this.sketchingEndingTime = 10
 
   this.timer = null
@@ -109,10 +108,6 @@ SketchTimer.prototype.pause = function() {
 SketchTimer.prototype.update = function() {
   this.countdownTime -= 1;
   this.element.html(this.timeFormatter.format(this.countdownTime))
-
-  if (this.countdownTime == this.sketchingWarningTime) {
-    this.queuePlayer.signalWarning()
-  }
 
   if (this.countdownTime == this.sketchingEndingTime) {
     this.queuePlayer.signalEnding()

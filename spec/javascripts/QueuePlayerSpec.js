@@ -196,16 +196,8 @@ describe("QueuePlayer", function() {
     })
   })
 
-  describe("signalWarning", function() {
-    it("plays a warning sound", function() {
-      queuePlayer.signalWarning()
-      expect(soundManager.lastOptions.url).toEqual('/resources/warning.mp3')
-      expect(soundManager.lastPlayer.playState).toEqual(1)
-    })
-  })
-
   describe("signalEnding", function() {
-    it("plays a warning sound", function() {
+    it("plays an ending sound", function() {
       queuePlayer.signalEnding()
       expect(soundManager.lastOptions.url).toEqual('/resources/ending.mp3')
       expect(soundManager.lastPlayer.playState).toEqual(1)

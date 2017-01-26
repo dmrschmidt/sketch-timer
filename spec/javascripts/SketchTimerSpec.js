@@ -5,7 +5,6 @@ FakeQueuePlayer.prototype.pause = function() { this.playing = false }
 FakeQueuePlayer.prototype.stop = function() { this.playing = false }
 FakeQueuePlayer.prototype.next = function() {}
 FakeQueuePlayer.prototype.isPlaying = function() { return this.playing }
-FakeQueuePlayer.prototype.signalWarning = function () {}
 FakeQueuePlayer.prototype.signalEnding = function () {}
 
 function FakeSleepPreventer() { this.sleepPreventionEnabled = false; this.lastElement = null }
@@ -152,19 +151,13 @@ describe("SketchTimer", function() {
 
   describe("warning sounds", function() {
     beforeEach(function(done) {
-      sketchTimer.sketchingWarningTime = 419
       sketchTimer.sketchingEndingTime = 419
 
-      spyOn(queuePlayer, "signalWarning")
       spyOn(queuePlayer, "signalEnding")
 
       sketchTimer.play()
 
       setTimeout(done, 1000)
-    })
-
-    it("plays a warning sound at given time", function() {
-      expect(queuePlayer.signalWarning).toHaveBeenCalled()
     })
 
     it("plays an ending sound at given time", function() {
