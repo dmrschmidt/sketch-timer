@@ -42,9 +42,13 @@ QueuePlayer.prototype.bufferRandomTrack = function() {
       this.next(true)
     }.bind(this)
   })
+
+  this.player.onPosition(50, function(position) {
+    this.delegate.didStartPlayback()
+  }.bind(this))
 }
 
-QueuePlayer.prototype.signalEnding = function () {
+QueuePlayer.prototype.signalEnding = function() {
   this.soundManager.createSound({ url: '/resources/ending.mp3' }).play()
 }
 
@@ -58,6 +62,10 @@ QueuePlayer.prototype.pause = function() {
 
 QueuePlayer.prototype.stop = function() {
   if (this.player != null) { this.player.stop() }
+}
+
+QueuePlayer.prototype.position = function() {
+  return (this.player != null) ? this.player.position : null
 }
 
 QueuePlayer.prototype.next = function(shouldKeepPlayingSeamlessly) {

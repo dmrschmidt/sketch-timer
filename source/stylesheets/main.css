@@ -73,6 +73,10 @@ html.active {
   background: #D0EA3B;
 }
 
+html.buffering {
+  background: #7DE594 !important;
+}
+
 .outer {
     display: table;
     position: absolute;

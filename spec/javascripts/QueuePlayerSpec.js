@@ -17,11 +17,12 @@ FakeSoundCloudAPI.prototype.resolve = function(url) {
   return new ArgumentCaptor()
 }
 
-function FakePlayer() { this.playState = 0; this.paused = true; }
+function FakePlayer() { this.playState = 0; this.paused = true; this.position = null; }
 FakePlayer.prototype.play = function() { this.playState = 1; this.paused = false; }
 FakePlayer.prototype.pause = function() { this.playState = 1; this.paused = true; }
 FakePlayer.prototype.stop = function() { this.playState = 0; this.paused = true; }
 FakePlayer.prototype.on = function(event, handler) { this.lastEvent = event; this.lastHandler = handler; }
+FakePlayer.prototype.onPosition = function(startPosition, handler) { this.lastStartPosition = startPosition; this.lastPositionHandler = handler; }
 
 function FakeSoundManager() { this.lastPlayer = null }
 FakeSoundManager.prototype.createSound = function(options) {
@@ -46,7 +47,7 @@ describe("QueuePlayer", function() {
     soundCloudAPI = new FakeSoundCloudAPI()
     soundManager = new FakeSoundManager()
     apiKey = 'apiKey'
-    delegate = { didSwitchTrack: function() {} }
+    delegate = { didSwitchTrack: function() {}, didStartPlayback: function() {} }
     queuePlayer = new QueuePlayer(soundCloudAPI, soundManager, apiKey, myPlaylistUrl)
     player = new FakePlayer()
     queuePlayer.delegate = delegate
@@ -76,6 +77,7 @@ describe("QueuePlayer", function() {
         resolvePlaylistCall = new ArgumentCaptor()
         playlist = { tracks: [{ stream_url: '/stream/tracks/42' }] }
         spyOn(soundCloudAPI, "resolve").and.callFake(function(url) { return resolvePlaylistCall })
+        spyOn(delegate, "didStartPlayback")
         queuePlayer.prepare()
         resolvePlaylistCall.closure(playlist)
       })
@@ -87,6 +89,17 @@ describe("QueuePlayer", function() {
 
       it("buffers a track from that playlist", function() {
         expect(soundManager.lastOptions.autoLoad).toBeTruthy()
+      })
+
+      it("sets a handler to inform the delegate about beginning of playback", function() {
+        expect(queuePlayer.player.lastStartPosition).toEqual(50)
+      })
+
+      describe("playback start information", function() {
+        it("informs the delegate once playback starts", function() {
+          queuePlayer.player.lastPositionHandler(12)
+          expect(delegate.didStartPlayback).toHaveBeenCalled()
+        })
       })
     })
   })
@@ -149,9 +162,20 @@ describe("QueuePlayer", function() {
     })
   })
 
+  describe("position", function() {
+    it("returns null, when player is null", function() {
+      expect(queuePlayer.position()).toBeNull()
+    })
+
+    it("returns player position, when player is set", function() {
+      player.position = 42
+      queuePlayer.player = player
+      expect(queuePlayer.position()).toEqual(42)
+    })
+  })
+
   describe("next", function() {
     var newPlayer
-
 
     beforeEach(function() {
       newPlayer = new FakePlayer()

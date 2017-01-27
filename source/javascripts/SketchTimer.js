@@ -60,6 +60,18 @@ SketchTimer.prototype.didSwitchTrack = function() {
   this.flashScreen('switching')
 }
 
+SketchTimer.prototype.willStartPlayback = function() {
+  this.container.addClass('active')
+
+  if (this.queuePlayer.position() == null) {
+    this.container.addClass('buffering')
+  }
+}
+
+SketchTimer.prototype.didStartPlayback = function() {
+  this.container.removeClass('buffering')
+}
+
 SketchTimer.prototype.longTap = function() {
   console.log('long press')
   this.flashScreen('resetting')
@@ -86,8 +98,8 @@ SketchTimer.prototype.play = function() {
   console.log('requested play')
   clearInterval(this.timer)
 
+  this.willStartPlayback()
   this.queuePlayer.play()
-  this.container.addClass('active')
   this.timer = setInterval(this.update.bind(this), 1000)
 }
 

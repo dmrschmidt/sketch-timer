@@ -3,6 +3,7 @@ FakeQueuePlayer.prototype.prepare = function() {}
 FakeQueuePlayer.prototype.play = function() { this.playing = true }
 FakeQueuePlayer.prototype.pause = function() { this.playing = false }
 FakeQueuePlayer.prototype.stop = function() { this.playing = false }
+FakeQueuePlayer.prototype.position = function () { return this._position }
 FakeQueuePlayer.prototype.next = function() {}
 FakeQueuePlayer.prototype.isPlaying = function() { return this.playing }
 FakeQueuePlayer.prototype.signalEnding = function () {}
@@ -146,6 +147,39 @@ describe("SketchTimer", function() {
       it("marks timer as normal again", function() {
         expect(container.hasClass('switching')).toBeFalsy()
       })
+    })
+  })
+
+  describe("willStartPlayback", function() {
+    it("marks player as active", function() {
+      sketchTimer.willStartPlayback()
+      expect(container.hasClass('active')).toBeTruthy()
+    })
+
+    describe("when player has not yet been playing", function() {
+      it("marks player as buffering", function() {
+        sketchTimer.willStartPlayback()
+        expect(container.hasClass('buffering')).toBeTruthy()
+      })
+    })
+
+    describe("when player has already been playing", function() {
+      beforeEach(function() {
+        queuePlayer._position = 42
+      })
+
+      it("does not mark player as buffering", function() {
+        sketchTimer.willStartPlayback()
+        expect(container.hasClass('buffering')).toBeFalsy()
+      })
+    })
+  })
+
+  describe("didStartPlayback", function() {
+    it("unmarks player as buffering", function() {
+      container.addClass('buffering')
+      sketchTimer.didStartPlayback()
+      expect(container.hasClass('buffering')).toBeFalsy()
     })
   })
 
