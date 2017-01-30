@@ -61,20 +61,34 @@ html {
     transition: background 0.3s ease;
 }
 
-html.resetting {
-  background: #FF9900 !important;
+.resetting {
+  background: #F9570C !important;
 }
 
-html.switching {
+.switching {
   background: #CC00FF !important;
 }
 
-html.active {
+.active {
   background: #D0EA3B;
 }
 
-html.buffering {
-  background: #7DE594 !important;
+.buffering .timer {
+  animation: bounceOpacityBackAndForth 1.0s ease-out infinite;
+}
+
+@-webkit-keyframes bounceOpacityBackAndForth {
+    0% {
+        opacity: 1.0;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1.0;
+    }
 }
 
 .outer {

@@ -174,6 +174,27 @@ describe("QueuePlayer", function() {
     })
   })
 
+  describe("isBuffering", function() {
+    beforeEach(function() {
+      queuePlayer.player = player
+    })
+
+    it("when position is null returns true", function() {
+      queuePlayer.player.position = null
+      expect(queuePlayer.isBuffering()).toBeTruthy()
+    })
+
+    it("when position is 0 returns true", function() {
+      queuePlayer.player.position = 0
+      expect(queuePlayer.isBuffering()).toBeTruthy()
+    })
+
+    it("when position is > 0 returns false", function() {
+      queuePlayer.player.position = 42
+      expect(queuePlayer.isBuffering()).toBeFalsy()
+    })
+  })
+
   describe("next", function() {
     var newPlayer
 

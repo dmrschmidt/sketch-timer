@@ -3,6 +3,7 @@ FakeQueuePlayer.prototype.prepare = function() {}
 FakeQueuePlayer.prototype.play = function() { this.playing = true }
 FakeQueuePlayer.prototype.pause = function() { this.playing = false }
 FakeQueuePlayer.prototype.stop = function() { this.playing = false }
+FakeQueuePlayer.prototype.isBuffering = function () { return this._position == null }
 FakeQueuePlayer.prototype.position = function () { return this._position }
 FakeQueuePlayer.prototype.next = function() {}
 FakeQueuePlayer.prototype.isPlaying = function() { return this.playing }
@@ -27,6 +28,8 @@ describe("SketchTimer", function() {
     timeFormatter = new TimeFormatter()
     sketchTimer = new SketchTimer(element, container, timeFormatter, queuePlayer, sleepPreventer)
     sketchTimer.init()
+    sketchTimer.timerInterval = 50
+    sketchTimer.longTapThresholdMs = 100
   })
 
   afterEach(function() {
@@ -46,7 +49,7 @@ describe("SketchTimer", function() {
     setTimeout(function() {
       element.trigger("mouseup")
       done()
-    }, 500)
+    }, 110)
   }
 
   it("initiates sleep prevention watching", function() {
@@ -56,23 +59,49 @@ describe("SketchTimer", function() {
   describe("tapping the container quickly", function() {
     describe("toggles the timer / player", function() {
       describe("when currently stopped", function() {
-        beforeEach(function(done) {
-          tap(container, done, 100)
+        describe("when already buffered", function() {
+          beforeEach(function(done) {
+            queuePlayer._position = 100
+            container.addClass('buffering')
+            tap(container, done, 20)
+          })
+
+          it("requests playback", function() {
+            expect(queuePlayer.isPlaying()).toBeTruthy()
+          })
+
+          it("changes container to active", function() {
+            expect(container.hasClass('active')).toBeTruthy()
+          })
+
+          it("removes buffering state from container", function() {
+            expect(container.hasClass('buffering')).toBeFalsy()
+          })
         })
 
-        it("starts playing", function() {
-          expect(queuePlayer.isPlaying()).toBeTruthy()
-        })
+        describe("when not yet buffered", function() {
+          beforeEach(function(done) {
+            tap(container, done, 20)
+          })
 
-        it("changes container to active", function() {
-          expect(container.hasClass('active')).toBeTruthy()
+          it("requests playback", function() {
+            expect(queuePlayer.isPlaying()).toBeTruthy()
+          })
+
+          it("does not mark container active", function() {
+            expect(container.hasClass('active')).toBeFalsy()
+          })
+
+          it("changes container to buffering", function() {
+            expect(container.hasClass('buffering')).toBeTruthy()
+          })
         })
       })
 
       describe("when currently playing", function() {
         beforeEach(function(done) {
-          tap(container, function() {}, 100)
-          tap(container, done, 150)
+          tap(container, function() {}, 20)
+          tap(container, done, 40)
         })
 
         it("stops playing", function() {
@@ -97,16 +126,17 @@ describe("SketchTimer", function() {
 
     describe("when already playing", function() {
       beforeEach(function(done) {
-        tap(container, function() {}, 100)
-        setTimeout(done, 1400)
+        queuePlayer._position = 100
+        tap(container, function() {}, 20)
+        setTimeout(done, 100)
       })
 
       describe("reset", function() {
         beforeEach(function(done) {
           spyOn(queuePlayer, "stop").and.callThrough()
-          expect(element.html()).toEqual("6:59")
+          expect(element.html()).not.toEqual("7:00")
           slowTap(container, function() {})
-          setTimeout(done, 1400)
+          setTimeout(done, 100)
         })
 
         it("resets the time (stops countdown too, annoying to test)", function() {
@@ -151,11 +181,6 @@ describe("SketchTimer", function() {
   })
 
   describe("willStartPlayback", function() {
-    it("marks player as active", function() {
-      sketchTimer.willStartPlayback()
-      expect(container.hasClass('active')).toBeTruthy()
-    })
-
     describe("when player has not yet been playing", function() {
       it("marks player as buffering", function() {
         sketchTimer.willStartPlayback()
@@ -166,6 +191,11 @@ describe("SketchTimer", function() {
     describe("when player has already been playing", function() {
       beforeEach(function() {
         queuePlayer._position = 42
+      })
+
+      it("marks player as active", function() {
+        sketchTimer.willStartPlayback()
+        expect(container.hasClass('active')).toBeTruthy()
       })
 
       it("does not mark player as buffering", function() {
@@ -185,7 +215,8 @@ describe("SketchTimer", function() {
 
   describe("warning sounds", function() {
     beforeEach(function(done) {
-      sketchTimer.sketchingEndingTime = 419
+      sketchTimer.sketchingEndingTime = sketchTimer.sketchingDuration - 1
+      queuePlayer._position = 42
 
       spyOn(queuePlayer, "signalEnding")
 

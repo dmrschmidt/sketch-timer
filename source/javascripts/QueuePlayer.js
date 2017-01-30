@@ -64,6 +64,10 @@ QueuePlayer.prototype.stop = function() {
   if (this.player != null) { this.player.stop() }
 }
 
+QueuePlayer.prototype.isBuffering = function () {
+  return this.position() == null || this.position() == 0
+}
+
 QueuePlayer.prototype.position = function() {
   return (this.player != null) ? this.player.position : null
 }

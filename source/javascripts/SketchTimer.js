@@ -14,6 +14,7 @@ function SketchTimer(element, container, timeFormatter, queuePlayer, sleepPreven
   this.longTapThresholdMs = 400
   this.longTapTimer = null
   this.shakeGestureRecognizer = null
+  this.timerInterval = 1000
 }
 SketchTimer.prototype.constructor = SketchTimer
 
@@ -61,15 +62,29 @@ SketchTimer.prototype.didSwitchTrack = function() {
 }
 
 SketchTimer.prototype.willStartPlayback = function() {
-  this.container.addClass('active')
-
-  if (this.queuePlayer.position() == null) {
+  if (this.queuePlayer.isBuffering()) {
     this.container.addClass('buffering')
+  } else {
+    this.beginPlaybackCounterAndMarkVisually()
   }
 }
 
 SketchTimer.prototype.didStartPlayback = function() {
+  this.beginPlaybackCounterAndMarkVisually()
+}
+
+SketchTimer.prototype.stopPlaybackCounterAndMarkVisually = function () {
+  clearInterval(this.timer)
+  this.container.removeClass('active')
   this.container.removeClass('buffering')
+}
+
+SketchTimer.prototype.beginPlaybackCounterAndMarkVisually = function () {
+  this.stopPlaybackCounterAndMarkVisually()
+  this.container.addClass('active')
+
+  clearInterval(this.timer)
+  this.timer = setInterval(this.update.bind(this), this.timerInterval)
 }
 
 SketchTimer.prototype.longTap = function() {
@@ -81,6 +96,7 @@ SketchTimer.prototype.longTap = function() {
 SketchTimer.prototype.shake = function() {
   console.log('shake!')
   this.queuePlayer.next()
+  if (this.isActive()) { this.willStartPlayback() }
 }
 
 SketchTimer.prototype.reset = function() {
@@ -96,25 +112,20 @@ SketchTimer.prototype.isActive = function() {
 
 SketchTimer.prototype.play = function() {
   console.log('requested play')
-  clearInterval(this.timer)
-
   this.willStartPlayback()
   this.queuePlayer.play()
-  this.timer = setInterval(this.update.bind(this), 1000)
 }
 
 SketchTimer.prototype.stop = function() {
   console.log('requested stop')
   this.queuePlayer.stop()
-  this.container.removeClass('active')
-  clearInterval(this.timer)
+  this.stopPlaybackCounterAndMarkVisually()
 }
 
 SketchTimer.prototype.pause = function() {
   console.log('requested pause')
   this.queuePlayer.pause()
-  this.container.removeClass('active')
-  clearInterval(this.timer)
+  this.stopPlaybackCounterAndMarkVisually()
 }
 
 SketchTimer.prototype.update = function() {
