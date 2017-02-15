@@ -69,8 +69,16 @@ and open the indicated jasmine server in your local browser.
 
 ## CloudFoundry
 
-Make sure you have a `manifest.yml` set up, which includes all the
-required environment variables and other configurations.
+Make sure you are logged in to your CLoud Foundry instance and have a
+`manifest.yml` set up, which includes all the required environment variables
+and other configurations. If you already created an app, you can create this
+file with the CF CLI:
+
+```bash
+cf create-app-manifest YOUR_APP_NAME
+```
+
+Then you can deploy using this rake task:
 
 ```bash
 rake cf:deploy
