@@ -55,6 +55,16 @@ gem `middleman-dotenv` is integrated to use a `.env` file to
 store your credentials without having to check them in.
 See `.env.example`.
 
+To run the app locally, run
+
+`middleman serve`
+
+To run the specs, run
+
+`rake jasmine`
+
+and open the indicated jasmine server in your local browser.
+
 # Deployment
 
 ## CloudFoundry
