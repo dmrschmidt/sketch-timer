@@ -1,11 +1,11 @@
-# Zeebn - a sketching session timer [![Build Status](https://travis-ci.org/project-tenjin/backend.svg?branch=master)](https://travis-ci.org/project-tenjin/backend)
+# Zeebn - a sketching session timer [![Build Status](https://travis-ci.org/dmrschmidt/zeebn.svg?branch=master)](https://travis-ci.org/dmrschmidt/zeebn)
 
 # Usage
 
 Go to https://zeebn.cfapps.io and add it to your home screen to
 run as a dedicated web app on your mobile.
 
-By default, Zeebn runs a timer for 7 minutes. Tracks are
+Zeebn runs a timer for 7 minutes. Tracks are
 shuffled from the selected playlist each time the app opens.
 Playback is continuous, i.e. when a track finishes before the
 timer runs out, the next track will be played seamlessly.
@@ -30,16 +30,6 @@ browser's URL bar when viewing the playlist on SoundCloud.
 For instance:
 
 > http://zeebn.cfapps.io?playlist=https://soundcloud.com/metzeltiger/sets/berghain
-
-## Limitations
-
-### Device Idle Timer Workaround
-
-Adding Zeebn to your home screen, however has the annoying side effect that *device sleep can not be prevented*.
-Quite annoying for a timer like this, since also the music playback stops.
-
-A workaround for this is to instead add https://zeebn.cfapps.io/awake to your home screen.
-That will keep the unattractive browser canvas visible but at least the device sleep timer will be disabled.
 
 # Development / SetUp
 
@@ -83,3 +73,7 @@ Then you can deploy using this rake task:
 ```bash
 rake cf:deploy
 ```
+
+# Attributions
+
+Uses the amazing [NoSleep.js](https://github.com/richtr/NoSleep.js) to prevent the app from sleeping.
