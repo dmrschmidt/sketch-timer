@@ -1,0 +1,16 @@
+language: ruby
+rvm:
+- 2.4.0
+script: rake jasmine:ci
+install:
+- middleman build
+deploy:
+  provider: cloudfoundry
+  api: https://api.run.pivotal.io
+  username: dmrschmidt@gmail.com
+  password:
+    secure: ljDTmaPfISehATsRStm0hdQ8oqqEjDmc3v+oOqKohBletl7PAcFVC3jyoM2AEIMgCmysq6d7c4JesqE39L3ljEuHMZjvVAb1NeVfhyEpbsznvSzIGtcK+pfOyIUnITwTmxsj+miu65TC2+MGD3buzRTSSGugFWCX59O9BDxjPY/+aWRmFiySP6zft1ZSHfq+4ORKPM1ZW1tEbkmSAleUbY77uwItxyTn6xbswk9Jj9G0OGeaqUV7IvUr2ongdIGXy1GQyzXzU+3pk8apIKGzfhhUranHuDzhcpOEnW5NLJTqRgYZXNrsHo+zHCyMK05ySwA+Qj8vAB5RXQbmv/vIxwn772ZPBueEmICLSeANdfd2+EBiLEkQDYgtmjQOmWCh9do45Eoh+Op5TEgctaZw5Z0hM/6xGiDfNx1dmB7NvkbfK4J0m+00L3lnjCRQQVjub6q5Kuqp//kO+QuYWG+vaic65+7ShiNbQ87aL9FYRygtzpg4R6OaW5y9Tv+osnbJIsHK0Z7qe4dRbp3BJgQKIwwnZsViIQFxPvTbQZNRi88Dxxe8HbipnBoqfkTvBi/QpA9p3hdZM6lbTLBTU9QUSLHznSGntoUSiSmf+KPrSOndAZNYPp/GuG3P11S0KeZdKhpgw9IshvqyoU/w8G1jr/YJlZXzr/rNpTMVwLaD2vg=
+  organization: dmrschmidt-org
+  space: pivotal
+  on:
+    repo: dmrschmidt/zeebn
