@@ -3,7 +3,7 @@ rvm:
 - 2.4.0
 script: rake jasmine:ci
 install:
-- middleman build
+- bundle install && middleman build
 deploy:
   provider: cloudfoundry
   api: https://api.run.pivotal.io
