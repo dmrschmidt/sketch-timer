@@ -29,7 +29,7 @@ browser's URL bar when viewing the playlist on SoundCloud.
 
 For instance:
 
-> http://zeebn.cfapps.io?playlist=https://soundcloud.com/metzeltiger/sets/berghain
+> https://zeebn.cfapps.io?playlist=https://soundcloud.com/metzeltiger/sets/berghain
 
 # Development / SetUp
 
@@ -57,9 +57,13 @@ and open the indicated jasmine server in your local browser.
 
 # Deployment
 
-## CloudFoundry
+## Cloud Foundry - automatic deploy
 
-Make sure you are logged in to your CLoud Foundry instance and have a
+Pushing to this repository automatically deploys the app to Cloud Foundry through [Travis CI](https://travis-ci.org/dmrschmidt/zeebn). It pushes to https://zeebn.cfapps.io so no further action is required. Tests are run before pushing to ensure the code still works as expected.
+
+## Cloud Foundry - manual deploy
+
+Make sure you are logged in to your Cloud Foundry instance and have a
 `manifest.yml` set up, which includes all the required environment variables
 and other configurations. If you already created an app, you can create this
 file with the CF CLI:
