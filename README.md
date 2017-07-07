@@ -1,4 +1,4 @@
-# Zeebn - a sketching session timer
+# Zeebn - a sketching session timer [![Build Status](https://travis-ci.org/project-tenjin/backend.svg?branch=master)](https://travis-ci.org/project-tenjin/backend)
 
 # Usage
 
