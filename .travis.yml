@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-- 2.4.0
+- 2.6.5
 script: rake jasmine:ci
 before_install:
 - openssl aes-256-cbc -K $encrypted_e4d5c1d125dd_key -iv $encrypted_e4d5c1d125dd_iv -in manifest.yml.enc -out manifest.yml -d
